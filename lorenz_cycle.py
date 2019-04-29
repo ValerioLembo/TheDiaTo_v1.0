@@ -54,6 +54,8 @@ import sys
 import numpy as np
 from cdo import Cdo
 from netCDF4 import Dataset
+import warnings
+warnings.filterwarnings("ignore", message="ComplexWarning")
 
 G = 9.81
 R = 287.00
