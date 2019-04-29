@@ -394,7 +394,7 @@ def kinentr(logger, aux_file, tasvert_file, lect, lec):
     """
     cdo = Cdo()
     removeif(aux_file)
-    if lec is True:
+    if lec is 'True':
         cdo.yearmonmean(input=tasvert_file, output=aux_file)
         with Dataset(aux_file) as f_l:
             tabl_mean = f_l.variables['ts'][:, 0, 0]
