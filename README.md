@@ -93,17 +93,17 @@ the developers.
      - Surface longwave radiation upwards (rlus);
      - Surface turbulent latent heat fluxes (hfls);
      - Surface turbulent sensible heat fluxes (hfss);
-     - Surface temperature (tas);
+     - Surface temperature (ts);
      - Specific humidity on pressure levels (hus);
      
     b. The following variables are needed at the daily resolution or higher:
-     - Near-surface temperature;
-     - Near-surface (or 10m) zonal velocity;
-     - Near-surface (or 10m) meridional velocity;
-     - Air temperature (on pressure levels);
-     - Horizontal velocity (on pressure levels);
-     - Meridional velocity (on pressure levels);
-     - Vertical velocity (on pressure levels);
+     - Near-surface temperature (tas);
+     - Near-surface (or 10m) zonal velocity (uas);
+     - Near-surface (or 10m) meridional velocity (vas);
+     - Air temperature (on pressure levels) (ta);
+     - Horizontal velocity (on pressure levels) (ua);
+     - Meridional velocity (on pressure levels) (va);
+     - Vertical velocity (on pressure levels) (wap);
      
     c. The following dimensions are accepted (dimension name in brackets):
      - Longitude (lon);
