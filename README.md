@@ -1,4 +1,4 @@
-# TheDiaTo_v1.0
+# TheDiaTo v1.0
 A collection of diagnostic for the study of the thermodynamics of the climate system
 
 ## Author
