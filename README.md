@@ -7,7 +7,7 @@ Valerio Lembo
 
 ## Introduction
 
-The tool consists of three modules; one for the
+The tool consists of four modules; one for the
 computation of energy budgets and transports, one for the water mass budgets
 (and related meridional transports), one for the Lorenz Energy Cycle (LEC),
 one for the material entropy production.
