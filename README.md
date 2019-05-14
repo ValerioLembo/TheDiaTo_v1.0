@@ -80,7 +80,7 @@ the developers.
 
 ## Usage
 
-1. Obtain the datasets and store them as follows.
+1. Obtain the datasets and store them as follows (the .
 
     a. The following variables are needed at the monthly resolution or higher
        (required variable name in brackets):
@@ -120,8 +120,11 @@ the developers.
        'chname,namein,nameout filein.nc fileout.nc' 
        and the NCO command (for dimensions): 
        'ncrename -h -d namein,nameout -v .namein,nameout filename.nc'
+    
     e. Create a folder in the input directory for each model you need to
        analyse, named after the model.
+    
+    f. Provide each field in a different file. The file name must start with the name of the variable.
 
 2: The companion script 'namelist.py' is available for the user in order to
    specify the directory paths. The following options can also be set:
