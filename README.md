@@ -80,7 +80,7 @@ the developers.
 
 ## Usage
 
-1. Obtain the datasets and store them as follows (the .
+1. Obtain the datasets and store them as follows:
 
     a. The following variables are needed at the monthly resolution or higher
        (required variable name in brackets):
