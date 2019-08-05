@@ -70,7 +70,7 @@ def balances(wdir, plotpath, filena, name, model):
         coords = [dims[0], dims[1]]
         plot_climap_eb(model, pdir, coords, tmean, ext_name)
         fig = plt.figure()
-        strings = ['Meridional heat transports', 'Latitude [deg]', '[W]']
+        strings = ['Meridional enthalpy transports', 'Latitude [deg]', '[W]']
         lats = dims[1]
         for i in np.arange(nsub):
             filename = filena[i] + '.nc'
@@ -571,8 +571,17 @@ def plot_mm_scatter(axi, varlist, title, xlabel, ylabel):
     plt.scatter(xval, yval, c=(0, 0, 0), alpha=1)
     plt.scatter(np.nanmean(xval), np.nanmean(yval), c='red')
     s_l, _, _, _, _ = stats.linregress(xval, yval)
-    semimaj = np.max([np.nanstd(xval), np.nanstd(yval)])
-    semimin = np.min([np.nanstd(xval), np.nanstd(yval)])
+    #semimaj = np.max([np.nanstd(xval), np.nanstd(yval)])
+    #semimin = np.min([np.nanstd(xval), np.nanstd(yval)])
+    semimaj = (
+        np.max([np.nanmean(xval), np.nanmean(yval)])*
+        np.max([np.nanstd(xval)/np.nanmean(xval), 
+                np.nanstd(yval)/np.nanmean(yval)]))
+    semimin = (
+        np.min([np.nanmean(xval), np.nanmean(yval)])*
+        np.min([np.nanstd(xval)/np.nanmean(xval), 
+                np.nanstd(yval)/np.nanmean(yval)]))
+
     plot_ellipse(
         semimaj,
         semimin,
@@ -742,7 +751,7 @@ def plot_mm_transp_panel(model_names, wdir, axi, domn, yrange):
             toat = dataset.variables[name][:]
             lats = dataset.variables['lat_{}'.format(model)][:]
         plt.plot(np.array(lats), np.array(toat), color='black', linewidth=1.)
-    plt.title('(a) {} heat transports'.format(domn), fontsize=18)
+    plt.title('(a) {} enthalpy transports'.format(domn), fontsize=18)
     plt.xlabel('Latitude [deg]', fontsize=14)
     plt.ylabel('[W]', fontsize=14)
     plt.tight_layout()
@@ -776,7 +785,7 @@ def pr_output(varout, filep, nc_f, nameout, latn):
     nc_fid = Dataset(filep, 'r')
     w_nc_fid = Dataset(nc_f, 'w', format='NETCDF4')
     w_nc_fid.description = ("Total, atmospheric and oceanic annual ",
-                            "mean meridional heat transports")
+                            "mean meridional enthalpy transports")
     fourc.extr_lat(nc_fid, w_nc_fid, latn)
     w_nc_var = w_nc_fid.createVariable(nameout, 'f8', (latn))
     varatts(w_nc_var, nameout)
@@ -886,13 +895,13 @@ def varatts(w_nc_var, varname):
     """
     if varname == 'total':
         w_nc_var.setncatts({
-            'long_name': "Total merid. heat transport",
+            'long_name': "Total merid. enthalpy transport",
             'units': "W",
             'level_desc': 'TOA'
         })
     elif varname == 'atmos':
         w_nc_var.setncatts({
-            'long_name': "Atmos. merid. heat transport",
+            'long_name': "Atmos. merid. enthalpy transport",
             'units': "W",
             'level_desc': 'Vertically integrated'
         })

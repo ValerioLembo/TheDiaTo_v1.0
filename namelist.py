@@ -15,6 +15,7 @@ E-mail: valerio.lembo@uni-hamburg.de .
 import datetime
 
 now = datetime.datetime.now()
+date = now.isoformat()
 
 # Write here the path to the input directory, where the model outputs are
 # contained, the plots directory, where the plots and the tables of the LEC are
@@ -26,23 +27,22 @@ now = datetime.datetime.now()
 # A subfolder with the name of the model is automatically created in the plots
 # and working directories.
 idir_up = '/work/um0005/u234097/ESMV/modeldata_standalone'
-pdir_up = '/work/um0005/u234097/ESMV/plots_standalone'
-wdir_up = '/work/um0005/u234097/ESMV/output_standalone'
+pdir_up = '/work/um0005/u234097/ESMV/plots_standalone_{}'.format(date)
+wdir_up = '/work/um0005/u234097/ESMV/output_standalone_{}'.format(date)
 direc = [idir_up, pdir_up, wdir_up]
 
 # Write the model names you want to analyse in this list, as strings and
 # separated by commas.
-models = ['MPI-ESM-P']
+models = ['BNU-ESM', 'CanESM2', 'IPSL-CM5A-MR', 'MIROC5', 'MIROC-ESM-CHEM', 'MPI-ESM-LR', 'MPI-ESM-MR']
 
 # Set the flags for the modules to 'True' or 'False'. Set the 'met' flag to
 # '1' for computing the MEP with the indirect method, '2' for the direct method
 # , '3' for both.
 lsm = 'False' # Flag for the land-ocean computations
 wat = 'False' # Flag for the water and latent energy budget
-lec = 'True' # Flag for the LEC
+lec = 'False' # Flag for the LEC
 entr = 'True' # Flag for the MEP
-met = '3' # Option for the MEP method
+met = '1' # Option for the MEP method
 
 flagin = [lsm, wat, lec, entr, met]
-date = now.isoformat()
 logfile = 'log_{}.txt'.format(date) # Put the desired name for the log here
