@@ -93,8 +93,13 @@ the developers.
      - Surface longwave radiation upwards (rlus);
      - Surface turbulent latent heat fluxes (hfls);
      - Surface turbulent sensible heat fluxes (hfss);
+     - Precipitation flux (pr);
+     - Snowfall flux (prsn);
+     - Surface air pressure (ps);
      - Surface temperature (ts);
      - Specific humidity on pressure levels (hus);
+     
+     N.B. Precipitation fluxes are expected to have kg m-2 s-1 as u.o.m.
      
     b. The following variables are needed at the daily resolution or higher:
      - Near-surface temperature (tas);
@@ -111,7 +116,7 @@ the developers.
      - Pressure levels (plev);
      - Time (time);
      
-       The latitude must be N->S (the CDO command 'invertlat' may help adapting
+       N.B. The latitude must be N->S (the CDO command 'invertlat' may help adapting
        data to this requirement). The datasets must be global, i.e. spanning the
        whole Earth.
      
@@ -125,6 +130,14 @@ the developers.
        analyse, named after the model.
     
     f. Provide each field in a different file. The file name must start with the name of the variable.
+    
+    g. If the option 'lsm' is set to 'True', a land-sea mask shall be provided as a land area fraction (from 0 to 100) in a          separate folder, named as 'ls_mask', at the same level as the folder containing the model outputs for a single model.
+       The land-sea mask is expected to be a NetCDF file whose name format is 'lsmask_<model_name>.nc'.
+       Example:
+        
+        model_data/
+        model_data/model_name/*.nc
+        model_data/ls_mask/lsmask_<model_name>.nc
 
 2: The companion script 'namelist.py' is available for the user in order to
    specify the directory paths. The following options can also be set:
