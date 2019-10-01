@@ -147,6 +147,8 @@ def init_mkthe(model, wdir, filelist, flags):
             ]
         else:
             aux_files = []
+    else:
+        aux_files = []
     remove_files = [tasmn_file, uasmn_file, vasmn_file, te_gmean_file]
     for filen in remove_files:
         os.remove(filen)
