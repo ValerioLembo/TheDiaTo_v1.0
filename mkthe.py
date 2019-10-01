@@ -111,7 +111,7 @@ def init_mkthe(model, wdir, filelist, flags):
     if wat is 'True' and entr is 'False':
         evspsbl_file, prr_file = wfluxes(model, wdir, filelist)
         aux_files = [evspsbl_file, prr_file]
-    if entr:
+    if entr is 'True':
         if met in {'2', '3'}:
             evspsbl_file, prr_file = wfluxes(model, wdir, filelist)
             mk_list = [
