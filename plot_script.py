@@ -214,10 +214,6 @@ def global_averages(nsub, filena, name):
     nlats = len(lats)
     nlons = len(lons)
     ntime = len(time)
-    yr_0 = int(len(time) / 12)
-    timey = np.linspace(0, yr_0 - 1, num=yr_0)
-    dims = [lons, lats, time, timey]
-    ndims = [nlons, nlats, ntime, yr_0]
     var = np.zeros([nsub, ntime, nlats, nlons])
     for i in np.arange(nsub):
         filena[i] = filena[i].split(sep, 1)[0]
@@ -225,12 +221,24 @@ def global_averages(nsub, filena, name):
         with Dataset(filename) as dataset:
             dataset = Dataset(filename)
             var[i, :, :, :] = dataset.variables[name[i]][:, :, :]
-    var_r = np.reshape(var,
-                       (nsub, int(np.shape(var)[1] / 12), 12, nlats, nlons))
-    vary = np.nanmean(var_r, axis=2)
-    zmean = np.nanmean(vary, axis=3)
-    tmean = np.nanmean(vary, axis=1)
-    timeser = np.zeros([nsub, yr_0, 3])
+    if ntime >= 12:
+        yr_0 = int(len(time) / 12)
+        timey = np.linspace(0, yr_0 - 1, num=yr_0)
+        dims = [lons, lats, time, timey]
+        ndims = [nlons, nlats, ntime, yr_0]
+        var_r = np.reshape(var,
+                           (nsub, int(np.shape(var)[1] / 12), 12,
+                            nlats, nlons))
+        vary = np.nanmean(var_r, axis=2)
+        zmean = np.nanmean(vary, axis=3)
+        tmean = np.nanmean(vary, axis=1)
+        timeser = np.zeros([nsub, yr_0, 3])
+    else:
+        dims = [lons, lats, time, time]
+        ndims = [nlons, nlats, ntime, ntime]
+        tmean = var
+        zmean = np.nanmean(var, axis=3)
+        timeser = np.zeros([nsub, ntime, 3])
     for i_f in np.arange(nsub):
         zmean_w = latwgt(lats, zmean[i_f, :, :])
         gmean = np.nansum(zmean_w, axis=1)
