@@ -91,8 +91,8 @@ the developers.
      - Surface shortwave radiation upwards (rsus);
      - Surface longwave radiation downwards (rlds);
      - Surface longwave radiation upwards (rlus);
-     - Surface turbulent latent heat fluxes (hfls);
-     - Surface turbulent sensible heat fluxes (hfss);
+     - Surface upward turbulent latent heat fluxes (hfls);
+     - Surface upward turbulent sensible heat fluxes (hfss);
      - Precipitation flux (pr);
      - Snowfall flux (prsn);
      - Surface air pressure (ps);
@@ -116,9 +116,14 @@ the developers.
      - Pressure levels (plev);
      - Time (time);
      
-       N.B. The latitude must be N->S (the CDO command 'invertlat' may help adapting
+       N.B. The latitude must be S->N (the CDO command 'invertlat' may help adapting
        data to this requirement). The datasets must be global, i.e. spanning the
        whole Earth.
+       
+       N.B. A calendar time must be defined and the time axis must refer to that. You may
+       use the combination of 'setreftime' and 'settaxis' CDO commands in order to prepare
+       the datasets. In doing so, the time resolution shall be correctly specifiend (see the
+       CDO manual for more information).
      
     d. In case variable and dimension names do not comply to these requirements
        you may use the CDO command (for variables): 
