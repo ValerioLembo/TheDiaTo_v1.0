@@ -124,6 +124,10 @@ the developers.
        use the combination of 'setreftime' and 'settaxis' CDO commands in order to prepare
        the datasets. In doing so, the time resolution shall be correctly specifiend (see the
        CDO manual for more information).
+       
+       N.B. The grids are expected to be recognised structured lonxlat grids (either regular or gaussian).
+       If this is not the case, you may want to remap to recognised grids, using either remapbil or 
+       remapcon CDO commands (see the CDO manual for specific instructions).
      
     d. In case variable and dimension names do not comply to these requirements
        you may use the CDO command (for variables): 
