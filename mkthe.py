@@ -53,6 +53,7 @@ def init_mkthe(model, wdir, filelist, flags):
     - wdir: the working directory where the outputs are stored;
     - filelist: a list of file names containing the input fields;
     - flags: (wat: a flag for the water mass budget module (y or n),
+              lec: a flag for the Lorenz Energy Cycle (y or n),
               entr: a flag for the material entropy production (y or n);
               met: a flag for the material entropy production method
               (1: indirect, 2, direct, 3: both));
@@ -62,42 +63,10 @@ def init_mkthe(model, wdir, filelist, flags):
     """
     cdo = Cdo()
     wat = flags[0]
-    entr = flags[1]
-    met = flags[2]
-    hfss_file = filelist[1]
-    hus_file = filelist[2]
-    ps_file = filelist[5]
+    lec = flags[1]
+    entr = flags[2]
+    met = flags[3]
     rlut_file = filelist[8]
-    tas_file = filelist[14]
-    ts_file = filelist[15]
-    uas_file = filelist[17]
-    vas_file = filelist[19]
-    # Compute monthly mean fields from 2D surface daily fields
-    aux_file = wdir + '/aux.nc'
-    cdo.selvar('tas', input=tas_file, output=aux_file)
-    move(aux_file, tas_file)
-    tasmn_file = wdir + '/{}_tas_mm.nc'.format(model)
-    cdo.selvar(
-        'tas',
-        input='-monmean {}'.format(tas_file),
-        option='-b F32',
-        output=tasmn_file)
-    cdo.selvar('uas', input=uas_file, output=aux_file)
-    move(aux_file, uas_file)
-    uasmn_file = wdir + '/{}_uas_mm.nc'.format(model)
-    cdo.selvar(
-        'uas',
-        input='-monmean {}'.format(uas_file),
-        option='-b F32',
-        output=uasmn_file)
-    cdo.selvar('vas', input=vas_file, output=aux_file)
-    move(aux_file, vas_file)
-    vasmn_file = wdir + '/{}_vas_mm.nc'.format(model)
-    cdo.selvar(
-        'vas',
-        input='-monmean {}'.format(vas_file),
-        option='-b F32',
-        output=vasmn_file)
     # emission temperature
     te_file = wdir + '/{}_te.nc'.format(model)
     cdo.sqrt(
@@ -111,9 +80,43 @@ def init_mkthe(model, wdir, filelist, flags):
     if wat is 'True' and entr is 'False':
         evspsbl_file, prr_file = wfluxes(model, wdir, filelist)
         aux_files = [evspsbl_file, prr_file]
+    if lec is 'True':
+        tas_file = filelist[14]
+        uas_file = filelist[17]
+        vas_file = filelist[19]
+        # Compute monthly mean fields from 2D surface daily fields
+        aux_file = wdir + '/aux.nc'
+        cdo.selvar('tas', input=tas_file, output=aux_file)
+        move(aux_file, tas_file)
+        tasmn_file = wdir + '/{}_tas_mm.nc'.format(model)
+        cdo.selvar(
+            'tas',
+            input='-monmean {}'.format(tas_file),
+            option='-b F32',
+            output=tasmn_file)
+        cdo.selvar('uas', input=uas_file, output=aux_file)
+        move(aux_file, uas_file)
+        uasmn_file = wdir + '/{}_uas_mm.nc'.format(model)
+        cdo.selvar(
+            'uas',
+            input='-monmean {}'.format(uas_file),
+            option='-b F32',
+            output=uasmn_file)
+        cdo.selvar('vas', input=vas_file, output=aux_file)
+        move(aux_file, vas_file)
+        vasmn_file = wdir + '/{}_vas_mm.nc'.format(model)
+        cdo.selvar(
+            'vas',
+            input='-monmean {}'.format(vas_file),
+            option='-b F32',
+            output=vasmn_file)
     if entr is 'True':
         if met in {'2', '3'}:
             evspsbl_file, prr_file = wfluxes(model, wdir, filelist)
+            hfss_file = filelist[1]
+            hus_file = filelist[2]
+            ps_file = filelist[5]
+            ts_file = filelist[15]
             mk_list = [
                 ts_file, hus_file, ps_file, uasmn_file, vasmn_file, hfss_file,
                 te_file

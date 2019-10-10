@@ -44,6 +44,12 @@ import numpy as np
 from namelist import direc, models, flagin, logfile
 import computations, lorenz_cycle, mkthe, plot_script
 
+list_basic=[
+    'hfls_','hfss_','rlds_','rlus_','rlut_','rsds_','rsdt_','rsus_','rsut_']
+list_wat=['pr_','prsn_']
+list_lec=['ta_','tas_','ua_','uas_','va_','vas_','wap_']
+list_indentr=['ts_']
+list_direntr=['hus_','pr_','prsn_','ps_','ts_']
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 logging.basicConfig(filename=logfile, level=logging.INFO)
 logger = logging.getLogger(__file__)
@@ -56,7 +62,7 @@ logger.info('Work directory: %s \n', direc[2])
 logger.info('Plot directory: %s \n', direc[1])
 plotsmod = plot_script
 logger.info('model_names')
-flags = [flagin[1], flagin[3], flagin[4]]
+flags = [flagin[1], flagin[2], flagin[3], flagin[4]]
 # Initialize multi-model arrays
 modnum = len(models)
 te_all = np.zeros(modnum)
@@ -97,11 +103,16 @@ for model in models:
     logger.info('Processing model: %s \n', model)
     filenames = [f for f in glob.glob(idir + "/*.nc", recursive=True)]
     filenames.sort()
-    rlds_file = filenames[6]
-    rlus_file = filenames[7]
-    rsds_file = filenames[9]
-    rsus_file = filenames[11]
-    ts_file = filenames[15]
+    for i in list_basic:
+        for name in filenames:
+            if list_basic[i] in name:
+                exec("%sfile = %s", (list_basic[i],name))
+    print(rlds_file)
+    #rlds_file = filenames[6]
+    #rlus_file = filenames[7]
+    #rsds_file = filenames[9]
+    #rsus_file = filenames[11]
+    #ts_file = filenames[15]
     aux_file = wdir + '/aux.nc'
     te_ymm_file, te_gmean_constant, _, _ = mkthe.init_mkthe(
         model, wdir, filenames, flags)
