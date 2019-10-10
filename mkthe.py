@@ -77,6 +77,7 @@ def init_mkthe(model, wdir, filelist, flags):
     cdo.timmean(input='-fldmean {}'.format(te_ymm_file), output=te_gmean_file)
     with Dataset(te_gmean_file) as f_l:
         te_gmean_constant = f_l.variables['rlut'][0, 0, 0]
+    os.remove(te_gmean_file)
     if wat is 'True' and entr is 'False':
         evspsbl_file, prr_file = wfluxes(model, wdir, filelist)
         aux_files = [evspsbl_file, prr_file]
@@ -148,13 +149,13 @@ def init_mkthe(model, wdir, filelist, flags):
                 evspsbl_file, htop_file, prr_file, tabl_file, tasvert_file,
                 tcloud_file, tcolumn_file, tlcl_file
             ]
+            remove_files = [tasmn_file, uasmn_file, vasmn_file]
+            for filen in remove_files:
+                os.remove(filen)
         else:
             aux_files = []
     else:
         aux_files = []
-    remove_files = [tasmn_file, uasmn_file, vasmn_file, te_gmean_file]
-    for filen in remove_files:
-        os.remove(filen)
     return te_ymm_file, te_gmean_constant, te_file, aux_files
 
 
