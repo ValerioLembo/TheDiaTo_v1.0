@@ -51,7 +51,7 @@ def init_mkthe(model, wdir, filelist, flags):
     Arguments:
     - model: the model name;
     - wdir: the working directory where the outputs are stored;
-    - filelist: a list of file names containing the input fields;
+    - filelist: a file or a list of files containing the input fields;
     - flags: (wat: a flag for the water mass budget module (y or n),
               lec: a flag for the Lorenz Energy Cycle (y or n),
               entr: a flag for the material entropy production (y or n);
@@ -66,8 +66,8 @@ def init_mkthe(model, wdir, filelist, flags):
     lec = flags[1]
     entr = flags[2]
     met = flags[3]
-    rlut_file = filelist[8]
     # emission temperature
+    rlut_file = filelist
     te_file = wdir + '/{}_te.nc'.format(model)
     cdo.sqrt(
         input="-sqrt -mulc,{} {}".format(SIGMAINV, rlut_file), output=te_file)
@@ -77,6 +77,7 @@ def init_mkthe(model, wdir, filelist, flags):
     cdo.timmean(input='-fldmean {}'.format(te_ymm_file), output=te_gmean_file)
     with Dataset(te_gmean_file) as f_l:
         te_gmean_constant = f_l.variables['rlut'][0, 0, 0]
+    os.remove(te_gmean_file)
     if wat is 'True' and entr is 'False':
         evspsbl_file, prr_file = wfluxes(model, wdir, filelist)
         aux_files = [evspsbl_file, prr_file]
@@ -148,13 +149,13 @@ def init_mkthe(model, wdir, filelist, flags):
                 evspsbl_file, htop_file, prr_file, tabl_file, tasvert_file,
                 tcloud_file, tcolumn_file, tlcl_file
             ]
+            remove_files = [tasmn_file, uasmn_file, vasmn_file]
+            for filen in remove_files:
+                os.remove(filen)
         else:
             aux_files = []
     else:
         aux_files = []
-    remove_files = [tasmn_file, uasmn_file, vasmn_file, te_gmean_file]
-    for filen in remove_files:
-        os.remove(filen)
     return te_ymm_file, te_gmean_constant, te_file, aux_files
 
 

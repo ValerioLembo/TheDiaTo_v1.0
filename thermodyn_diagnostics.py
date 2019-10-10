@@ -107,7 +107,6 @@ for model in models:
         for name in filenames:
             if i in name:
                 exec("%sfile = '%s'" % (i,name))
-    print(rlds_file)
     #rlds_file = filenames[6]
     #rlus_file = filenames[7]
     #rsds_file = filenames[9]
@@ -115,7 +114,7 @@ for model in models:
     #ts_file = filenames[15]
     aux_file = wdir + '/aux.nc'
     te_ymm_file, te_gmean_constant, _, _ = mkthe.init_mkthe(
-        model, wdir, filenames, flags)
+        model, wdir, rlut_file, flags)
     te_all[i_m] = te_gmean_constant
     logger.info('Computing energy budgets\n')
     eb_gmean, eb_file, toab_ymm_file = comp.budgets(
