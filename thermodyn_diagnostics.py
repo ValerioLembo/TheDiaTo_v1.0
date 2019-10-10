@@ -105,8 +105,8 @@ for model in models:
     filenames.sort()
     for i in list_basic:
         for name in filenames:
-            if list_basic[i] in name:
-                exec("%sfile = %s", (list_basic[i],name))
+            if i in name:
+                exec("%sfile = '%s'" % (i,name))
     print(rlds_file)
     #rlds_file = filenames[6]
     #rlus_file = filenames[7]
