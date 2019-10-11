@@ -117,7 +117,7 @@ for model in models:
     #ts_file = filenames[15]
     aux_file = wdir + '/aux.nc'
     te_ymm_file, te_gmean_constant, _, _ = mkthe.init_mkthe(
-        model, wdir, dict_basic, flags)
+        model, wdir, dict_basic)
     te_all[i_m] = te_gmean_constant
     logger.info('Computing energy budgets\n')
     eb_gmean, eb_file, toab_ymm_file = comp.budgets(
