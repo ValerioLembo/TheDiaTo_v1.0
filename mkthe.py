@@ -76,11 +76,12 @@ def init_mkthe(model, wdir, filedict, flags=None):
     os.remove(te_gmean_file)
     aux_files = []
     if flags:
+        print('I am here')
         wat = flags[0]
         lec = flags[1]
         entr = flags[2]
         met = flags[3]
-        if wat is 'True' and entr is 'False':
+        if wat is 'True':
             evspsbl_file, prr_file = wfluxes(model, wdir, filedict)
             aux_files = [evspsbl_file, prr_file]
         if lec is 'True':
@@ -116,16 +117,18 @@ def init_mkthe(model, wdir, filedict, flags=None):
             aux_files = []
         if entr is 'True':
             if met in {'2', '3'}:
-                evspsbl_file, prr_file = wfluxes(model, wdir, filedict)
+                if wat is 'False':
+                    evspsbl_file, prr_file = wfluxes(model, wdir, filedict)
                 hfss_file = filedict['hfss']
                 hus_file = filedict['hus']
                 ps_file = filedict['ps']
                 ts_file = filedict['ts']
                 mk_list = [
-                    ts_file, hus_file, ps_file, uasmn_file, vasmn_file, hfss_file,
-                    te_file
+                    ts_file, hus_file, ps_file, uasmn_file, vasmn_file,
+                    hfss_file, te_file
                 ]
-                htop_file, tabl_file, tlcl_file = mkthe_main(wdir, mk_list, model)
+                htop_file, tabl_file, tlcl_file = mkthe_main(wdir, mk_list,
+                                                             model)
                 # Working temperatures for the hydrological cycle
                 tcloud_file = (wdir + '/{}_tcloud.nc'.format(model))
                 removeif(tcloud_file)
