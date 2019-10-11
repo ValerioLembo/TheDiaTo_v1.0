@@ -151,8 +151,8 @@ for model in models:
                     dict_basic[i] = name
         print(dict_basic)
         logger.info('Computing water mass and latent energy budgets\n')
-        _, _, _, aux_list = mkthe.init_mkthe(model, wdir, filenames, flags)
-        wm_gmean, wm_file = comp.wmbudg(model, wdir, aux_file, filenames,
+        _, _, _, aux_list = mkthe.init_mkthe(model, wdir, dict_basic, flags)
+        wm_gmean, wm_file = comp.wmbudg(model, wdir, aux_file, dict_basic,
                                         aux_list)
         wmb_all[i_m, 0] = np.nanmean(wm_gmean[0])
         wmb_all[i_m, 1] = np.nanstd(wm_gmean[0])

@@ -273,21 +273,21 @@ def removeif(filename):
         pass
 
 
-def wfluxes(model, wdir, filelist):
+def wfluxes(model, wdir, filedict):
     """Compute auxiliary fields and perform time averaging of existing fields.
 
     Arguments:
     - model: the model name;
     - wdir: the working directory where the outputs are stored;
-    - filelist: a list of file names containing the input fields;
+    - filedict: a dictionary of file names containing the input fields;
 
     Author:
     Valerio Lembo, University of Hamburg (2019).
     """
     cdo = Cdo()
-    hfls_file = filelist[0]
-    pr_file = filelist[3]
-    prsn_file = filelist[4]
+    hfls_file = filedict['hfls']
+    pr_file = filedict['pr']
+    prsn_file = filedict['prsn']
     aux_file = wdir + '/aux.nc'
     evspsbl_file = (wdir + '/{}_evspsbl.nc'.format(model))
     cdo.divc(str(L_C), input="{}".format(hfls_file), output=evspsbl_file)
