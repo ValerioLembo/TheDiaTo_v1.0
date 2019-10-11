@@ -214,6 +214,11 @@ for model in models:
                         latent_la_gmean)
             logger.info('Done\n')
     if flagin[2] == 'True':
+        for i in list_lec:
+            for name in filenames:
+                if i in name:
+                    dict_basic[i] = name
+        print(dict_basic)        
         logger.info('Computation of the Lorenz Energy '
                     'Cycle (year by year)\n')
         ldir = os.path.join(pdir, 'LEC_results')
