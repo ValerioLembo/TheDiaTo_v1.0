@@ -46,10 +46,10 @@ import computations, lorenz_cycle, mkthe, plot_script
 
 list_basic=[
     'hfls','hfss','rlds','rlus','rlut','rsds','rsdt','rsus','rsut']
-list_wat=['pr','prsn']
-list_lec=['ta','tas','ua','uas','va','vas','wap']
+list_wat=['pr_','prsn']
+list_lec=['ta_','tas','ua_','uas','va_','vas','wap']
 list_indentr=['ts']
-list_direntr=['hus','pr','prsn','ps','ts']
+list_direntr=['hus','pr_','prsn','ps','ts']
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 logging.basicConfig(filename=logfile, level=logging.INFO)
 logger = logging.getLogger(__file__)
@@ -62,7 +62,7 @@ logger.info('Work directory: %s \n', direc[2])
 logger.info('Plot directory: %s \n', direc[1])
 plotsmod = plot_script
 logger.info('model_names')
-flags = [flagin[1], flagin[2], flagin[3], flagin[4]]
+flag = [flagin[1], flagin[2], flagin[3], flagin[4]]
 # Initialize multi-model arrays
 modnum = len(models)
 te_all = np.zeros(modnum)
@@ -151,7 +151,8 @@ for model in models:
                     dict_basic[i] = name
         print(dict_basic)
         logger.info('Computing water mass and latent energy budgets\n')
-        _, _, _, aux_list = mkthe.init_mkthe(model, wdir, dict_basic, flags)
+        _, _, _, aux_list = mkthe.init_mkthe(model, wdir, dict_basic,
+                                             flags=flag)
         wm_gmean, wm_file = comp.wmbudg(model, wdir, aux_file, dict_basic,
                                         aux_list)
         wmb_all[i_m, 0] = np.nanmean(wm_gmean[0])
@@ -232,7 +233,7 @@ for model in models:
     if flagin[3] == 'True':
         if flagin[4] in {'1', '3'}:
             _, _, te_file, _ = mkthe.init_mkthe(model, wdir, filenames,
-                                                flags)
+                                                flags=flag)
             logger.info('Computation of the material entropy production '
                         'with the indirect method\n')
             indentr_list = [
@@ -263,7 +264,7 @@ for model in models:
         if flagin[4] in {'2', '3'}:
             matentr, irrevers, entr_list = comp.direntr(
                 logger, model, wdir, filenames, aux_file, lect,
-                flagin[2], flags)
+                flagin[2], flags=flag)
             matentr_all[i_m, 0] = matentr
             if flagin[4] in {'3'}:
                 diffentr = (float(np.nanmean(vert_mn)) + float(

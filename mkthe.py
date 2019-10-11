@@ -289,7 +289,7 @@ def wfluxes(model, wdir, filedict):
     """
     cdo = Cdo()
     hfls_file = filedict['hfls']
-    pr_file = filedict['pr']
+    pr_file = filedict['pr_']
     prsn_file = filedict['prsn']
     aux_file = wdir + '/aux.nc'
     evspsbl_file = (wdir + '/{}_evspsbl.nc'.format(model))

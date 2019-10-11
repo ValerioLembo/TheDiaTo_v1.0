@@ -759,7 +759,7 @@ def wmbudg(model, wdir, aux_file, filedict, auxlist):
     latene_file = wdir + '/{}_latent.nc'.format(model)
     latene_gmean_file = wdir + '/{}_latent_gmean.nc'.format(model)
     removeif(aux_file)
-    cdo.sub(input="{} {}".format(auxlist[0], filedict['pr']),
+    cdo.sub(input="{} {}".format(auxlist[0], filedict['pr_']),
             output=aux_file)
     wmass_gmean = write_eb('hfls', 'wmb', aux_file, wmbudg_file, wm_gmean_file)
     removeif(aux_file)
