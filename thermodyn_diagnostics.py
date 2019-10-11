@@ -236,8 +236,8 @@ for model in models:
             logger.info('Computation of the material entropy production '
                         'with the indirect method\n')
             indentr_list = [
-                rlds_file, rlus_file, rsds_file, rsus_file, te_file,
-                eb_file[0], ts_file
+                dict_basic['rlds'], dict_basic['rlus'], dict_basic['rsds'],
+                dict_basic['rsus'], te_file, eb_file[0], dict_basic['ts']
             ]
             horz_mn, vert_mn, horzentr_file, vertentr_file = comp.indentr(
                 model, wdir, indentr_list, aux_file, eb_gmean[0])
