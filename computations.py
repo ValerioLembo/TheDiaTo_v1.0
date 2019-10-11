@@ -431,7 +431,9 @@ def landoc_budg(model, wdir, infile, mask, name):
     aux_file = wdir + '/aux.nc'
     removeif(aux_file)
     cdo.mul(input='{} -eqc,0 {}'.format(infile, mask), output=ocean_file)
-    cdo.timmean(input='-fldmean {}'.format(ocean_file), output=oc_gmean_file)
+    cdo.timmean(
+        input='-fldmean -setctomiss,nan -setmissval,nan {}'.format(ocean_file),
+        output=oc_gmean_file)
     with Dataset(oc_gmean_file) as f_l:
         oc_gmean = f_l.variables[name][0, 0, 0]
     cdo.sub(input='{} {}'.format(infile, ocean_file), output=land_file)
@@ -439,7 +441,9 @@ def landoc_budg(model, wdir, infile, mask, name):
     move(aux_file, ocean_file)
     cdo.setctomiss('0', input=land_file, output=aux_file)
     move(aux_file, land_file)
-    cdo.timmean(input='-fldmean {}'.format(land_file), output=la_gmean_file)
+    cdo.timmean(
+        input='-fldmean -setctomiss,nan -setmissval,nan {}'.format(land_file),
+        output=la_gmean_file)
     with Dataset(la_gmean_file) as f_l:
         la_gmean = f_l.variables[name][0, 0, 0]
     remove_files = [ocean_file, oc_gmean_file, land_file, la_gmean_file]
