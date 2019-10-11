@@ -218,7 +218,7 @@ for model in models:
             for name in filenames:
                 if i in name:
                     dict_basic[i] = name
-        print(dict_basic)        
+        print(dict_basic)
         logger.info('Computation of the Lorenz Energy '
                     'Cycle (year by year)\n')
         ldir = os.path.join(pdir, 'LEC_results')
@@ -241,6 +241,7 @@ for model in models:
                 for name in filenames:
                     if i in name:
                         dict_basic[i] = name
+            print(dict_basic)
             _, _, te_file, _ = mkthe.init_mkthe(model, wdir, dict_basic,
                                                 flags=flag)
             logger.info('Computation of the material entropy production '
@@ -275,6 +276,7 @@ for model in models:
                 for name in filenames:
                     if i in name:
                         dict_basic[i] = name
+            print(dict_basic)
             matentr, irrevers, entr_list = comp.direntr(
                 logger, model, wdir, dict_basic, aux_file, lect,
                 flagin[2], flags=flag)
