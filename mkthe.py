@@ -74,6 +74,7 @@ def init_mkthe(model, wdir, filedict, flags=None):
     with Dataset(te_gmean_file) as f_l:
         te_gmean_constant = f_l.variables['rlut'][0, 0, 0]
     os.remove(te_gmean_file)
+    aux_files = []
     if flags:
         wat = flags[0]
         lec = flags[1]
@@ -112,6 +113,7 @@ def init_mkthe(model, wdir, filedict, flags=None):
                 input='-monmean {}'.format(vas_file),
                 option='-b F32',
                 output=vasmn_file)
+            aux_files = []
         if entr is 'True':
             if met in {'2', '3'}:
                 evspsbl_file, prr_file = wfluxes(model, wdir, filedict)
