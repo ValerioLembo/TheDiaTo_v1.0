@@ -67,7 +67,7 @@ def init_mkthe(model, wdir, filelist, flags):
     entr = flags[2]
     met = flags[3]
     # emission temperature
-    rlut_file = filelist
+    rlut_file = dict_basic['rlut']
     te_file = wdir + '/{}_te.nc'.format(model)
     cdo.sqrt(
         input="-sqrt -mulc,{} {}".format(SIGMAINV, rlut_file), output=te_file)

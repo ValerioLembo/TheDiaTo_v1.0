@@ -114,7 +114,7 @@ def baroceff(model, wdir, aux_file, toab_file, te_file):
     return baroc
 
 
-def budgets(model, wdir, aux_file, filelist):
+def budgets(model, wdir, aux_file, filedict):
     """Compute radiative budgets from radiative and heat fluxes.
 
     The function computes TOA and surface energy budgets from radiative and
@@ -130,18 +130,18 @@ def budgets(model, wdir, aux_file, filelist):
     - model: the model name;
     - wdir: the working directory where the outputs are stored;
     - aux_file: the name of a dummy aux. file to be used for computations;
-    - filelist: a list of file names containing the input fields;
+    - filedict: a list of file names containing the input fields;
     """
     cdo = Cdo()
-    hfls_file = filelist[0]
-    hfss_file = filelist[1]
-    rlds_file = filelist[6]
-    rlus_file = filelist[7]
-    rlut_file = filelist[8]
-    rsds_file = filelist[9]
-    rsdt_file = filelist[10]
-    rsus_file = filelist[11]
-    rsut_file = filelist[12]
+    hfls_file = filedict['hfls']
+    hfss_file = filedict['hfss']
+    rlds_file = filedict['rlds']
+    rlus_file = filedict['rlus']
+    rlut_file = filedict['rlut']
+    rsds_file = filedict['rsds']
+    rsdt_file = filedict['rsdt']
+    rsus_file = filedict['rsus']
+    rsut_file = filedict['rsut']
     toab_file = wdir + '/{}_toab.nc'.format(model)
     toab_gmean_file = wdir + '/{}_toab_gmean.nc'.format(model)
     surb_file = wdir + '/{}_surb.nc'.format(model)

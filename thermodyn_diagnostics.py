@@ -45,11 +45,11 @@ from namelist import direc, models, flagin, logfile
 import computations, lorenz_cycle, mkthe, plot_script
 
 list_basic=[
-    'hfls_','hfss_','rlds_','rlus_','rlut_','rsds_','rsdt_','rsus_','rsut_']
-list_wat=['pr_','prsn_']
-list_lec=['ta_','tas_','ua_','uas_','va_','vas_','wap_']
-list_indentr=['ts_']
-list_direntr=['hus_','pr_','prsn_','ps_','ts_']
+    'hfls','hfss','rlds','rlus','rlut','rsds','rsdt','rsus','rsut']
+list_wat=['pr','prsn']
+list_lec=['ta','tas','ua','uas','va','vas','wap']
+list_indentr=['ts']
+list_direntr=['hus','pr','prsn','ps','ts']
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 logging.basicConfig(filename=logfile, level=logging.INFO)
 logger = logging.getLogger(__file__)
@@ -103,10 +103,13 @@ for model in models:
     logger.info('Processing model: %s \n', model)
     filenames = [f for f in glob.glob(idir + "/*.nc", recursive=True)]
     filenames.sort()
+    dict_basic = {}
     for i in list_basic:
         for name in filenames:
             if i in name:
-                exec("%sfile = '%s'" % (i,name))
+                dict_basic[i] = name
+                #exec("%s_file = '%s'" % (i,name))
+    print(dict_basic)
     #rlds_file = filenames[6]
     #rlus_file = filenames[7]
     #rsds_file = filenames[9]
@@ -114,11 +117,11 @@ for model in models:
     #ts_file = filenames[15]
     aux_file = wdir + '/aux.nc'
     te_ymm_file, te_gmean_constant, _, _ = mkthe.init_mkthe(
-        model, wdir, rlut_file, flags)
+        model, wdir, dict_basic, flags)
     te_all[i_m] = te_gmean_constant
     logger.info('Computing energy budgets\n')
     eb_gmean, eb_file, toab_ymm_file = comp.budgets(
-        model, wdir, aux_file, filenames)
+        model, wdir, aux_file, dict_basic)
     toab_all[i_m, 0] = np.nanmean(eb_gmean[0])
     toab_all[i_m, 1] = np.nanstd(eb_gmean[0])
     atmb_all[i_m, 0] = np.nanmean(eb_gmean[1])
