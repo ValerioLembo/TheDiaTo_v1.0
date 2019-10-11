@@ -70,7 +70,9 @@ def init_mkthe(model, wdir, filedict, flags=None):
     te_ymm_file = wdir + '/{}_te_ymm.nc'.format(model)
     cdo.yearmonmean(input=te_file, output=te_ymm_file)
     te_gmean_file = wdir + '/{}_te_gmean.nc'.format(model)
-    cdo.timmean(input='-fldmean {}'.format(te_ymm_file), output=te_gmean_file)
+    cdo.timmean(
+        input='-fldmean -setctomiss,nan -setmissval,nan {}'.format(
+        te_ymm_file), output=te_gmean_file)
     with Dataset(te_gmean_file) as f_l:
         te_gmean_constant = f_l.variables['rlut'][0, 0, 0]
     os.remove(te_gmean_file)
@@ -149,7 +151,8 @@ def init_mkthe(model, wdir, filedict, flags=None):
                 tasvert_file = (wdir + '/{}_tboundlay.nc'.format(model))
                 removeif(tasvert_file)
                 cdo.fldmean(
-                    input='-mulc,0.5 -add {} {}'.format(ts_file, tabl_file),
+                    input='-setctomiss,nan -setmissval,nan -mulc,0.5 -add {} {}'
+                    .format(ts_file, tabl_file),
                     options='-b F32',
                     output=tasvert_file)
                 aux_files = [

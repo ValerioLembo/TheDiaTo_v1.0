@@ -792,7 +792,9 @@ def write_eb(namein, nameout, aux_file, d3_file, gmean_file):
     cdo = Cdo()
     ch_name = '{},{}'.format(namein, nameout)
     cdo.chname(ch_name, input=aux_file, options='-b F32', output=d3_file)
-    cdo.fldmean(input='-yearmonmean {}'.format(d3_file), output=gmean_file)
+    cdo.fldmean(
+        input='-yearmonmean -setctomiss,nan -setmissval,nan {}'.format(
+                d3_file), output=gmean_file)
     with Dataset(gmean_file) as f_l:
         constant = f_l.variables[nameout][:]
     return constant
