@@ -737,7 +737,7 @@ def snowentr(model, wdir, infile, aux_file):
     return snowentr_gmean, latsnow_file, snowentr_file
 
 
-def wmbudg(model, wdir, aux_file, filelist, auxlist):
+def wmbudg(model, wdir, aux_file, filedict, auxlist):
     """Compute the water mass and latent energy budgets.
 
     This function computes the annual mean water mass and latent energy budgets
@@ -750,7 +750,7 @@ def wmbudg(model, wdir, aux_file, filelist, auxlist):
     - model: the model name;
     - wdir: the working directory where the outputs are stored;
     - aux_file: the name of a dummy aux. file to be used for computations;
-    - filelist: a list of file names containing the input fields;
+    - filedict: a dictionary of file names containing the input fields;
     - auxlist: a list of auxiliary files;
     """
     cdo = Cdo()
@@ -759,12 +759,14 @@ def wmbudg(model, wdir, aux_file, filelist, auxlist):
     latene_file = wdir + '/{}_latent.nc'.format(model)
     latene_gmean_file = wdir + '/{}_latent_gmean.nc'.format(model)
     removeif(aux_file)
-    cdo.sub(input="{} {}".format(auxlist[0], filelist[3]), output=aux_file)
+    cdo.sub(input="{} {}".format(auxlist[0], filedict['pr']),
+            output=aux_file)
     wmass_gmean = write_eb('hfls', 'wmb', aux_file, wmbudg_file, wm_gmean_file)
     removeif(aux_file)
     cdo.sub(
         input="{} -add -mulc,{} {} -mulc,{} {}".format(
-            filelist[0], str(LC_SUB), filelist[4], str(L_C), auxlist[2]),
+            filedict['hfls'], str(LC_SUB), filedict['prsn'], str(L_C),
+            auxlist[2]),
         output=aux_file)
     latent_gmean = write_eb('hfls', 'latent', aux_file, latene_file,
                             latene_gmean_file)
