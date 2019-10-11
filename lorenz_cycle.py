@@ -884,11 +884,11 @@ def preproc_lec(model, wdir, ldir, filedict):
     import fourier_coefficients
     cdo = Cdo()
     fourc = fourier_coefficients
-    ta_file = filedict['ta']
+    ta_file = filedict['ta_']
     tas_file = filedict['tas']
-    ua_file = filedict['ua']
+    ua_file = filedict['ua_']
     uas_file = filedict['uas']
-    va_file = filedict['va']
+    va_file = filedict['va_']
     vas_file = filedict['vas']
     wap_file = filedict['wap']
     maskorog = wdir + '/orog.nc'
