@@ -224,7 +224,7 @@ for model in models:
         ldir = os.path.join(pdir, 'LEC_results')
         if not os.path.exists(ldir):
             os.makedirs(ldir)
-        lect = lorenz.preproc_lec(model, wdir, ldir, filenames)
+        lect = lorenz.preproc_lec(model, wdir, ldir, dict_basic)
         lec_all[i_m, 0] = np.nanmean(lect)
         lec_all[i_m, 1] = np.nanstd(lect)
         logger.info(

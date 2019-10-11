@@ -865,7 +865,7 @@ def removeif(filename):
         pass
 
 
-def preproc_lec(model, wdir, ldir, filelist):
+def preproc_lec(model, wdir, ldir, filedict):
     """Preprocess fields for LEC computations and send it to lorenz program.
 
     This function computes the interpolation of ta, ua, va, wap daily fields to
@@ -879,18 +879,18 @@ def preproc_lec(model, wdir, ldir, filelist):
     - wdir: the working directory where the outputs are stored;
     - ldir: the directory where the LEC tables and the diagram of the LEC for
             each year are stored;
-    - filelist: a list of file names containing the input fields;
+    - filedict: a dictionary of file names containing the input fields;
     """
     import fourier_coefficients
     cdo = Cdo()
     fourc = fourier_coefficients
-    ta_file = filelist[13]
-    tas_file = filelist[14]
-    ua_file = filelist[16]
-    uas_file = filelist[17]
-    va_file = filelist[18]
-    vas_file = filelist[19]
-    wap_file = filelist[20]
+    ta_file = filedict['ta']
+    tas_file = filedict['tas']
+    ua_file = filedict['ua']
+    uas_file = filedict['uas']
+    va_file = filedict['va']
+    vas_file = filedict['vas']
+    wap_file = filedict['wap']
     maskorog = wdir + '/orog.nc'
     ua_file_mask = wdir + '/ua_fill.nc'
     va_file_mask = wdir + '/va_fill.nc'
