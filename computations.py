@@ -766,7 +766,7 @@ def wmbudg(model, wdir, aux_file, filedict, auxlist):
     cdo.sub(
         input="{} -add -mulc,{} {} -mulc,{} {}".format(
             filedict['hfls'], str(LC_SUB), filedict['prsn'], str(L_C),
-            auxlist[2]),
+            auxlist[1]),
         output=aux_file)
     latent_gmean = write_eb('hfls', 'latent', aux_file, latene_file,
                             latene_gmean_file)
