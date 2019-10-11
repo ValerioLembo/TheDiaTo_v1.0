@@ -237,7 +237,11 @@ for model in models:
         lec_all[i_m, 1] = 0.2
     if flagin[3] == 'True':
         if flagin[4] in {'1', '3'}:
-            _, _, te_file, _ = mkthe.init_mkthe(model, wdir, filenames,
+            for i in list_indentr:
+                for name in filenames:
+                    if i in name:
+                        dict_basic[i] = name
+            _, _, te_file, _ = mkthe.init_mkthe(model, wdir, dict_basic,
                                                 flags=flag)
             logger.info('Computation of the material entropy production '
                         'with the indirect method\n')
@@ -267,8 +271,12 @@ for model in models:
             os.remove(te_file)
             logger.info('Done\n')
         if flagin[4] in {'2', '3'}:
+            for i in list_direntr:
+                for name in filenames:
+                    if i in name:
+                        dict_basic[i] = name
             matentr, irrevers, entr_list = comp.direntr(
-                logger, model, wdir, filenames, aux_file, lect,
+                logger, model, wdir, dict_basic, aux_file, lect,
                 flagin[2], flags=flag)
             matentr_all[i_m, 0] = matentr
             if flagin[4] in {'3'}:

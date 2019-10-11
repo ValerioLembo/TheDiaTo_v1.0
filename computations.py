@@ -179,7 +179,7 @@ def budgets(model, wdir, aux_file, filedict):
     return eb_gmean, eb_file, toab_ymm_file
 
 
-def direntr(logger, model, wdir, filelist, aux_file, lect, lec, flags):
+def direntr(logger, model, wdir, filedict, aux_file, lect, lec, flags):
     """Compute the material entropy production with the direct method.
 
     The function computes the material entropy production with the direct
@@ -194,7 +194,7 @@ def direntr(logger, model, wdir, filelist, aux_file, lect, lec, flags):
     - logger: the log file where the global mean values are printed out;
     - model: the model name;
     - wdir: the working directory where the outputs are stored;
-    - filelist: the list containing all the input files;
+    - filedict: a dictionary containing all the input files;
     - aux_file: the name of a dummy aux. file to be used for computations;
     - lect: the annual mean value of the LEC strength;
     - lec: a flag having y (yes) value if the LEC is computed, n (no) if not.
@@ -205,7 +205,7 @@ def direntr(logger, model, wdir, filelist, aux_file, lect, lec, flags):
     be computed, if using the indirect, the direct method, or both methods;
     """
     import mkthe
-    _, _, _, aux_files = mkthe.init_mkthe(model, wdir, filelist, flags)
+    _, _, _, aux_files = mkthe.init_mkthe(model, wdir, filedict, flags)
     htop_file = aux_files[1]
     prr_file = aux_files[2]
     tabl_file = aux_files[3]
@@ -213,10 +213,10 @@ def direntr(logger, model, wdir, filelist, aux_file, lect, lec, flags):
     tcloud_file = aux_files[5]
     tcolumn_file = aux_files[6]
     tlcl_file = aux_files[7]
-    hfls_file = filelist[0]
-    hfss_file = filelist[1]
-    prsn_file = filelist[4]
-    ts_file = filelist[15]
+    hfls_file = filedict['hfls']
+    hfss_file = filedict['hfss']
+    prsn_file = filedict['prsn']
+    ts_file = filedict['ts']
     logger.info('Computation of the material entropy '
                 'production with the direct method\n')
     logger.info('1. Sensible heat fluxes\n')
