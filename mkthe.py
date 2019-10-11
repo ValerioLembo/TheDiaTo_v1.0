@@ -76,7 +76,6 @@ def init_mkthe(model, wdir, filedict, flags=None):
     os.remove(te_gmean_file)
     aux_files = []
     if flags:
-        print('I am here')
         wat = flags[0]
         lec = flags[1]
         entr = flags[2]
@@ -84,6 +83,7 @@ def init_mkthe(model, wdir, filedict, flags=None):
         if wat is 'True':
             evspsbl_file, prr_file = wfluxes(model, wdir, filedict)
             aux_files = [evspsbl_file, prr_file]
+            return te_ymm_file, te_gmean_constant, te_file, aux_files
         if lec is 'True':
             tas_file = filedict['tas']
             uas_file = filedict['uas']
@@ -115,6 +115,7 @@ def init_mkthe(model, wdir, filedict, flags=None):
                 option='-b F32',
                 output=vasmn_file)
             aux_files = []
+            return te_ymm_file, te_gmean_constant, te_file, aux_files
         if entr is 'True':
             if met in {'2', '3'}:
                 if wat is 'False':
@@ -158,10 +159,13 @@ def init_mkthe(model, wdir, filedict, flags=None):
                 remove_files = [tasmn_file, uasmn_file, vasmn_file]
                 for filen in remove_files:
                     os.remove(filen)
+                return te_ymm_file, te_gmean_constant, te_file, aux_files
             else:
                 aux_files = []
+                return te_ymm_file, te_gmean_constant, te_file, aux_files
         else:
             aux_files = []
+            return te_ymm_file, te_gmean_constant, te_file, aux_files
     return te_ymm_file, te_gmean_constant, te_file, aux_files
 
 
