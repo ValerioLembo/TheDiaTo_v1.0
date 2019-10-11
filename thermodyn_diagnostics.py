@@ -145,6 +145,11 @@ for model in models:
     logger.info('Done\n')
     # Water mass budget
     if flagin[1] == 'True':
+        for i in list_wat:
+            for name in filenames:
+                if i in name:
+                    dict_basic[i] = name
+        print(dict_basic)
         logger.info('Computing water mass and latent energy budgets\n')
         _, _, _, aux_list = mkthe.init_mkthe(model, wdir, filenames, flags)
         wm_gmean, wm_file = comp.wmbudg(model, wdir, aux_file, filenames,

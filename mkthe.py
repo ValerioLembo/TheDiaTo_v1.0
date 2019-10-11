@@ -45,13 +45,13 @@ L_C = 2501000  # latent heat of condensation
 SIGMAINV = 17636684.3034  # inverse of the Stefan-Boltzmann constant
 
 
-def init_mkthe(model, wdir, filelist, flags):
+def init_mkthe(model, wdir, filedict, flags):
     """Compute auxiliary fields or perform time averaging of existing fields.
 
     Arguments:
     - model: the model name;
     - wdir: the working directory where the outputs are stored;
-    - filelist: a file or a list of files containing the input fields;
+    - filedict: a file or a list of files containing the input fields;
     - flags: (wat: a flag for the water mass budget module (y or n),
               lec: a flag for the Lorenz Energy Cycle (y or n),
               entr: a flag for the material entropy production (y or n);
@@ -67,7 +67,7 @@ def init_mkthe(model, wdir, filelist, flags):
     entr = flags[2]
     met = flags[3]
     # emission temperature
-    rlut_file = dict_basic['rlut']
+    rlut_file = filedict['rlut']
     te_file = wdir + '/{}_te.nc'.format(model)
     cdo.sqrt(
         input="-sqrt -mulc,{} {}".format(SIGMAINV, rlut_file), output=te_file)
@@ -79,12 +79,12 @@ def init_mkthe(model, wdir, filelist, flags):
         te_gmean_constant = f_l.variables['rlut'][0, 0, 0]
     os.remove(te_gmean_file)
     if wat is 'True' and entr is 'False':
-        evspsbl_file, prr_file = wfluxes(model, wdir, filelist)
+        evspsbl_file, prr_file = wfluxes(model, wdir, filedict)
         aux_files = [evspsbl_file, prr_file]
     if lec is 'True':
-        tas_file = filelist[14]
-        uas_file = filelist[17]
-        vas_file = filelist[19]
+        tas_file = filedict['tas']
+        uas_file = filedict['uas']
+        vas_file = filedict['vas']
         # Compute monthly mean fields from 2D surface daily fields
         aux_file = wdir + '/aux.nc'
         cdo.selvar('tas', input=tas_file, output=aux_file)
@@ -113,11 +113,11 @@ def init_mkthe(model, wdir, filelist, flags):
             output=vasmn_file)
     if entr is 'True':
         if met in {'2', '3'}:
-            evspsbl_file, prr_file = wfluxes(model, wdir, filelist)
-            hfss_file = filelist[1]
-            hus_file = filelist[2]
-            ps_file = filelist[5]
-            ts_file = filelist[15]
+            evspsbl_file, prr_file = wfluxes(model, wdir, filedict)
+            hfss_file = filedict['hfss']
+            hus_file = filedict['hus']
+            ps_file = filedict['ps']
+            ts_file = filedict['ts']
             mk_list = [
                 ts_file, hus_file, ps_file, uasmn_file, vasmn_file, hfss_file,
                 te_file
@@ -230,7 +230,7 @@ def mkthe_main(wdir, file_list, modelname):
 
     Arguments:
     - wdir: the working directory path;
-    - file_list: the list of file containing ts, hus,
+    - filedict: the list of file containing ts, hus,
     ps, uas, vas, hfss, te;
     - modelname: the name of the model from which the fields are;
     """
