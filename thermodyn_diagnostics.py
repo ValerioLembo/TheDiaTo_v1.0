@@ -47,7 +47,7 @@ import computations, lorenz_cycle, mkthe, plot_script
 list_basic=[
     'hfls','hfss','rlds','rlus','rlut','rsds','rsdt','rsus','rsut']
 list_wat=['pr_','prsn']
-list_lec=['ta_','tas','ua_','uas','va_','vas','wap']
+list_lec=['/ta_','tas','ua_','uas','va_','vas','wap']
 list_indentr=['ts']
 list_direntr=['hus','pr_','prsn','ps','ts']
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
