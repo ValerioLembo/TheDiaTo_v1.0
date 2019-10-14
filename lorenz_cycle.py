@@ -884,7 +884,7 @@ def preproc_lec(model, wdir, ldir, filedict):
     import fourier_coefficients
     cdo = Cdo()
     fourc = fourier_coefficients
-    ta_file = filedict['ta_']
+    ta_file = filedict['/ta_']
     tas_file = filedict['tas']
     ua_file = filedict['ua_']
     uas_file = filedict['uas']
