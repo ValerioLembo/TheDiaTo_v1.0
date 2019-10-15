@@ -45,11 +45,12 @@ from namelist import direc, models, flagin, logfile
 import computations, lorenz_cycle, mkthe, plot_script
 
 list_basic=[
-    'hfls','hfss','rlds','rlus','rlut','rsds','rsdt','rsus','rsut']
-list_wat=['pr_','prsn']
-list_lec=['/ta_','tas','ua_','uas','va_','vas','wap']
-list_indentr=['ts']
-list_direntr=['hus','pr_','prsn','ps','ts']
+    '/hfls_','/hfss_','/rlds_','/rlus_','/rlut_',
+    '/rsds_','/rsdt_','/rsus_','/rsut_']
+list_wat=['/pr_','/prsn_']
+list_lec=['/ta_','/tas','ua_','/uas_','/va_','/vas_','/wap_']
+list_indentr=['/ts_']
+list_direntr=['/hus_','/pr_','/prsn_','/ps_','/ts_']
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 logging.basicConfig(filename=logfile, level=logging.INFO)
 logger = logging.getLogger(__file__)
