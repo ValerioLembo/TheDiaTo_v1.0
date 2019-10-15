@@ -133,15 +133,15 @@ def budgets(model, wdir, aux_file, filedict):
     - filedict: a list of file names containing the input fields;
     """
     cdo = Cdo()
-    hfls_file = filedict['hfls']
-    hfss_file = filedict['hfss']
-    rlds_file = filedict['rlds']
-    rlus_file = filedict['rlus']
-    rlut_file = filedict['rlut']
-    rsds_file = filedict['rsds']
-    rsdt_file = filedict['rsdt']
-    rsus_file = filedict['rsus']
-    rsut_file = filedict['rsut']
+    hfls_file = filedict['/hfls_']
+    hfss_file = filedict['/hfss_']
+    rlds_file = filedict['/rlds_']
+    rlus_file = filedict['/rlus_']
+    rlut_file = filedict['/rlut_']
+    rsds_file = filedict['/rsds_']
+    rsdt_file = filedict['/rsdt_']
+    rsus_file = filedict['/rsus_']
+    rsut_file = filedict['/rsut_']
     toab_file = wdir + '/{}_toab.nc'.format(model)
     toab_gmean_file = wdir + '/{}_toab_gmean.nc'.format(model)
     surb_file = wdir + '/{}_surb.nc'.format(model)
@@ -213,10 +213,10 @@ def direntr(logger, model, wdir, filedict, aux_file, lect, lec, flags):
     tcloud_file = aux_files[5]
     tcolumn_file = aux_files[6]
     tlcl_file = aux_files[7]
-    hfls_file = filedict['hfls']
-    hfss_file = filedict['hfss']
-    prsn_file = filedict['prsn']
-    ts_file = filedict['ts']
+    hfls_file = filedict['/hfls_']
+    hfss_file = filedict['/hfss_']
+    prsn_file = filedict['/prsn_']
+    ts_file = filedict['/ts_']
     logger.info('Computation of the material entropy '
                 'production with the direct method\n')
     logger.info('1. Sensible heat fluxes\n')
@@ -759,13 +759,13 @@ def wmbudg(model, wdir, aux_file, filedict, auxlist):
     latene_file = wdir + '/{}_latent.nc'.format(model)
     latene_gmean_file = wdir + '/{}_latent_gmean.nc'.format(model)
     removeif(aux_file)
-    cdo.sub(input="{} {}".format(auxlist[0], filedict['pr_']),
+    cdo.sub(input="{} {}".format(auxlist[0], filedict['/pr_']),
             output=aux_file)
     wmass_gmean = write_eb('hfls', 'wmb', aux_file, wmbudg_file, wm_gmean_file)
     removeif(aux_file)
     cdo.sub(
         input="{} -add -mulc,{} {} -mulc,{} {}".format(
-            filedict['hfls'], str(LC_SUB), filedict['prsn'], str(L_C),
+            filedict['/hfls_'], str(LC_SUB), filedict['/prsn_'], str(L_C),
             auxlist[1]),
         output=aux_file)
     latent_gmean = write_eb('hfls', 'latent', aux_file, latene_file,

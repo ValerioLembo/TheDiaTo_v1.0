@@ -63,7 +63,7 @@ def init_mkthe(model, wdir, filedict, flags=None):
     """
     cdo = Cdo()
     # emission temperature
-    rlut_file = filedict['rlut']
+    rlut_file = filedict['/rlut_']
     te_file = wdir + '/{}_te.nc'.format(model)
     cdo.sqrt(
         input="-sqrt -mulc,{} {}".format(SIGMAINV, rlut_file), output=te_file)
@@ -87,9 +87,9 @@ def init_mkthe(model, wdir, filedict, flags=None):
             aux_files = [evspsbl_file, prr_file]
             return te_ymm_file, te_gmean_constant, te_file, aux_files
         if lec is 'True':
-            tas_file = filedict['tas']
-            uas_file = filedict['uas']
-            vas_file = filedict['vas']
+            tas_file = filedict['/tas_']
+            uas_file = filedict['/uas_']
+            vas_file = filedict['/vas_']
             # Compute monthly mean fields from 2D surface daily fields
             aux_file = wdir + '/aux.nc'
             cdo.selvar('tas', input=tas_file, output=aux_file)
@@ -122,10 +122,10 @@ def init_mkthe(model, wdir, filedict, flags=None):
             if met in {'2', '3'}:
                 if wat is 'False':
                     evspsbl_file, prr_file = wfluxes(model, wdir, filedict)
-                hfss_file = filedict['hfss']
-                hus_file = filedict['hus']
-                ps_file = filedict['ps']
-                ts_file = filedict['ts']
+                hfss_file = filedict['/hfss_']
+                hus_file = filedict['/hus_']
+                ps_file = filedict['/ps_']
+                ts_file = filedict['/ts_']
                 mk_list = [
                     ts_file, hus_file, ps_file, uasmn_file, vasmn_file,
                     hfss_file, te_file
@@ -298,9 +298,9 @@ def wfluxes(model, wdir, filedict):
     Valerio Lembo, University of Hamburg (2019).
     """
     cdo = Cdo()
-    hfls_file = filedict['hfls']
-    pr_file = filedict['pr_']
-    prsn_file = filedict['prsn']
+    hfls_file = filedict['/hfls_']
+    pr_file = filedict['/pr_']
+    prsn_file = filedict['/prsn_']
     aux_file = wdir + '/aux.nc'
     evspsbl_file = (wdir + '/{}_evspsbl.nc'.format(model))
     cdo.divc(str(L_C), input="{}".format(hfls_file), output=evspsbl_file)
