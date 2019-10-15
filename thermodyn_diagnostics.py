@@ -48,7 +48,7 @@ list_basic=[
     '/hfls_','/hfss_','/rlds_','/rlus_','/rlut_',
     '/rsds_','/rsdt_','/rsus_','/rsut_']
 list_wat=['/pr_','/prsn_']
-list_lec=['/ta_','/tas','ua_','/uas_','/va_','/vas_','/wap_']
+list_lec=['/ta_','/tas_','ua_','/uas_','/va_','/vas_','/wap_']
 list_indentr=['/ts_']
 list_direntr=['/hus_','/pr_','/prsn_','/ps_','/ts_']
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
@@ -111,11 +111,6 @@ for model in models:
                 dict_basic[i] = name
                 #exec("%s_file = '%s'" % (i,name))
     print(dict_basic)
-    #rlds_file = filenames[6]
-    #rlus_file = filenames[7]
-    #rsds_file = filenames[9]
-    #rsus_file = filenames[11]
-    #ts_file = filenames[15]
     aux_file = wdir + '/aux.nc'
     te_ymm_file, te_gmean_constant, _, _ = mkthe.init_mkthe(
         model, wdir, dict_basic)
