@@ -122,6 +122,23 @@ def init_mkthe(model, wdir, filedict, flags=None):
             if met in {'2', '3'}:
                 if wat is 'False':
                     evspsbl_file, prr_file = wfluxes(model, wdir, filedict)
+                if lec is 'False':
+                    cdo.selvar('uas', input=uas_file, output=aux_file)
+                    move(aux_file, uas_file)
+                    uasmn_file = wdir + '/{}_uas_mm.nc'.format(model)
+                    cdo.selvar(
+                        'uas',
+                        input='-monmean {}'.format(uas_file),
+                        option='-b F32',
+                        output=uasmn_file)
+                    cdo.selvar('vas', input=vas_file, output=aux_file)
+                    move(aux_file, vas_file)
+                    vasmn_file = wdir + '/{}_vas_mm.nc'.format(model)
+                    cdo.selvar(
+                        'vas',
+                        input='-monmean {}'.format(vas_file),
+                        option='-b F32',
+                        output=vasmn_file)
                 hfss_file = filedict['/hfss_']
                 hus_file = filedict['/hus_']
                 ps_file = filedict['/ps_']
