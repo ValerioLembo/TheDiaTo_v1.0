@@ -120,7 +120,7 @@ def init_mkthe(model, wdir, filedict, flags=None):
             return te_ymm_file, te_gmean_constant, te_file, aux_files
         if entr is 'True':
             if met in {'2', '3'}:
-                if wat is 'False':
+                if wat == 'False':
                     evspsbl_file, prr_file = wfluxes(model, wdir, filedict)
                 if lec is 'False':
                     cdo.selvar('uas', input=uas_file, output=aux_file)

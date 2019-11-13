@@ -133,10 +133,13 @@ def balances(wdir, plotpath, filena, name, model):
         axi.plot(dims[3], timeser[i_f, :, 2], 'b', label='NH')
         plt.title('Annual mean {}'.format(ext_name[i_f]))
         plt.xlabel('Years')
-        plt.ylabel('[W/m2]')
+        if ext_name[i_f] == 'Water mass budget':
+            plt.ylabel('[Kg m-2 s-1]')
+        else:
+            plt.ylabel('[W/m2]')
         axi.legend(
             loc='upper center',
-            bbox_to_anchor=(0.5, -0.07),
+            bbox_to_anchor=(0.5, -0.13),
             shadow=True,
             ncol=3)
         plt.tight_layout()
