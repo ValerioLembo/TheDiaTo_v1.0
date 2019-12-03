@@ -205,7 +205,7 @@ def direntr(logger, model, wdir, filedict, aux_file, lect, lec, flags):
     be computed, if using the indirect, the direct method, or both methods;
     """
     import mkthe
-    _, _, _, aux_files = mkthe.init_mkthe(model, wdir, filedict, flags)
+    _, _, _, aux_files = mkthe.init_mkthe_direntr(model, wdir, filedict, flags)
     htop_file = aux_files[1]
     prr_file = aux_files[2]
     tabl_file = aux_files[3]
