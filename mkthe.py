@@ -67,7 +67,7 @@ def init_mkthe_direntr(model, wdir, filedict, te_file, flags):
     cdo = Cdo()
     met = flags[3]
     if met in {'2', '3'}:
-        evspsbl_file, prr_file = wfluxes(model, wdir, input_data)
+        evspsbl_file, prr_file = wfluxes(model, wdir, filedict)
         hfss_file = filedict['/hfss_']
         hus_file = filedict['/hus_']
         ps_file = filedict['/ps_']
@@ -168,14 +168,14 @@ def init_mkthe_te(model, wdir, filedict):
     return te_ymm_file, te_gmean_constant, te_file
 
 
-def init_mkthe_wat(model, wdir, input_data, flags):
+def init_mkthe_wat(model, wdir, filedict, flags):
     """Compute auxiliary fields or perform time averaging of existing fields.
 
     Arguments:
     ---------
     model: the model name;
     wdir: the working directory where the outputs are stored;
-    input_data: a dictionary containing the input fields;
+    filedict: a dictionary containing the input fields;
     flags: (wat: a flag for the water mass budget module (y or n),
             entr: a flag for the material entropy production (y or n);
             met: a flag for the material entropy production method
@@ -187,7 +187,7 @@ def init_mkthe_wat(model, wdir, input_data, flags):
     """
     wat = flags[0]
     if wat == 'True':
-        evspsbl_file, prr_file = wfluxes(model, wdir, input_data)
+        evspsbl_file, prr_file = wfluxes(model, wdir, filedict)
         aux_files = [evspsbl_file, prr_file]
     return aux_files
 
