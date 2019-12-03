@@ -112,7 +112,7 @@ for model in models:
                 #exec("%s_file = '%s'" % (i,name))
     print(dict_basic)
     aux_file = wdir + '/aux.nc'
-    te_ymm_file, te_gmean_constant, _, _ = mkthe.init_mkthe(
+    te_ymm_file, te_gmean_constant, te_file = mkthe.init_mkthe_te(
         model, wdir, dict_basic)
     te_all[i_m] = te_gmean_constant
     logger.info('Computing energy budgets\n')
@@ -145,10 +145,9 @@ for model in models:
             for name in filenames:
                 if i in name:
                     dict_basic[i] = name
-        print(dict_basic)
         logger.info('Computing water mass and latent energy budgets\n')
-        _, _, _, aux_list = mkthe.init_mkthe(model, wdir, dict_basic,
-                                             flags=flag)
+        aux_list = mkthe.init_mkthe_wat(model, wdir, dict_basic,
+                                        flags=flag)
         wm_gmean, wm_file = comp.wmbudg(model, wdir, aux_file, dict_basic,
                                         aux_list)
         wmb_all[i_m, 0] = np.nanmean(wm_gmean[0])
@@ -237,9 +236,6 @@ for model in models:
                 for name in filenames:
                     if i in name:
                         dict_basic[i] = name
-            print(dict_basic)
-            _, _, te_file, _ = mkthe.init_mkthe(model, wdir, dict_basic,
-                                                flags=flag)
             logger.info('Computation of the material entropy production '
                         'with the indirect method\n')
             indentr_list = [
