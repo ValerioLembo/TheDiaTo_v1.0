@@ -267,8 +267,8 @@ def direntr(logger, model, wdir, filedict, aux_file, lect, lec, flags):
     logger.info('Material entropy production with '
                 'the direct method: %s\n', matentr)
     irrevers = ((matentr - float(skin)) / float(skin))
-    for filen in aux_files:
-        os.remove(filen)
+    # for filen in aux_files:
+    #    os.remove(filen)
     entr_list = [
         sensentr_file, evapentr_file, rainentr_file, snowentr_file,
         meltentr_file, potentr_file
