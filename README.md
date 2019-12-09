@@ -265,7 +265,7 @@ The output directory contains the following NetCDF files:
 
 ## References
 
-Lembo, V., Lunkeit, F., and Lucarini, V.: TheDiaTo (v1.0) – A new diagnostic tool for water, energy and entropy budgets in climate models, Geosci. Model Dev. Discuss., https://doi.org/10.5194/gmd-2019-37, in review, 2019
+Lembo, V., Lunkeit, F., and Lucarini, V.: TheDiaTo (v1.0) – A new diagnostic tool for water, energy and entropy budgets in climate models, Geosci. Model Dev., 12, 3805–3834, https://doi.org/10.5194/gmd-12-3805-2019, 2019
 
 ## Versions
 2019-04-29: a stand-alone version of TheDiaTo v1.0 is branched from ESMValTool v2.0b repository;
