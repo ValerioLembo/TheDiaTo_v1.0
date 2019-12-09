@@ -6,6 +6,7 @@ for the output log containing the values of the global metrics.
 
 ############################################################################
 2019-04-29: the script has been created.
+2019-12-09: added an option for the retrieval of the evaporation flux.
 ############################################################################
 
 Author: Valerio Lembo, Meteorological Institute, University of Hamburg
@@ -43,8 +44,7 @@ wat = 'False' # Flag for the water and latent energy budget
 lec = 'False' # Flag for the LEC
 entr = 'True' # Flag for the MEP
 met = '1' # Option for the MEP method
-evap = '2' # Option for the evaporation flux (1 if it has to be computed from
-           # the latent heat fluxes, 2 if the field is provided)
+evap = '2' # Option for the evaporation flux
 
 flagin = [lsm, wat, lec, entr, met, evap]
 logfile = 'log_{}.txt'.format(date) # Put the desired name for the log here

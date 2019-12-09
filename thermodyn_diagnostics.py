@@ -30,7 +30,10 @@ For additional information and user manual see README.md
 
 2019-04-29: a stand-alone version of TheDiaTo v1.0 is branched from ESMValTool
             v2.0b repository;
-
+2019-11-15: the script ingests a different number of input fields, depending
+            on the options chosen by the user;
+2019-12-09: the water mass budget can be computed from input fields containing
+            evaporation fluxes, if available;
 #############################################################################
 """
 
