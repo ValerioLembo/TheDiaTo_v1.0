@@ -153,7 +153,7 @@ def budgets(model, wdir, aux_file, filedict):
     cdo.sub(
         input="-sub {} {} {}".format(rsdt_file, rsut_file, rlut_file),
         output=aux_file)
-    toab_gmean = write_eb('rsdt', 'toab', aux_file, toab_file, toab_gmean_file)
+    toab_gmean = write_eb('toab', aux_file, toab_file, toab_gmean_file)
     toab_ymm_file = wdir + '/{}_toab_ymm.nc'.format(model)
     cdo.yearmonmean(input=toab_file, output=toab_ymm_file)
     # Surface energy budget
@@ -163,11 +163,11 @@ def budgets(model, wdir, aux_file, filedict):
         input="-sub -sub -sub {} {} {} {} {}".format(
             aux_surb_file, rsus_file, rlus_file, hfls_file, hfss_file),
         output=aux_file)
-    surb_gmean = write_eb('rsds', 'surb', aux_file, surb_file, surb_gmean_file)
+    surb_gmean = write_eb('surb', aux_file, surb_file, surb_gmean_file)
     # Atmospheric energy budget
     removeif(aux_file)
     cdo.sub(input="{} {}".format(toab_file, surb_file), output=aux_file)
-    atmb_gmean = write_eb('toab', 'atmb', aux_file, atmb_file, atmb_gmean_file)
+    atmb_gmean = write_eb('atmb', aux_file, atmb_file, atmb_gmean_file)
     eb_gmean = [toab_gmean, atmb_gmean, surb_gmean]
     eb_file = [toab_file, atmb_file, surb_file]
     # Delete files
@@ -301,7 +301,7 @@ def entr(filelist, nin, nout, entr_file, entr_mean_file):
         input='-yearmonmean -monmean -div {} {}'.format(en_file, tem_file),
         options='-b F32',
         output=aux_file)
-    entr_gmean = write_eb(nin, nout, aux_file, entr_file, entr_mean_file)
+    entr_gmean = write_eb(nout, aux_file, entr_file, entr_mean_file)
     return entr_gmean
 
 
@@ -359,7 +359,7 @@ def indentr(model, wdir, infile, aux_file, toab_gmean):
         input='-mulc,-1 -div -subc,{}  {}  {}'.format(
             np.nanmean(toab_gmean), infile[5], infile[4]),
         output=aux_file)
-    horzentr_mean = write_eb('toab', 'shor', aux_file, horzentropy_file,
+    horzentr_mean = write_eb('shor', aux_file, horzentropy_file,
                              horzentropy_mean_file)
     cdo.yearmonmean(
         input=' -add {} -sub {} -add {} {}'.format(infile[0], infile[2],
@@ -369,7 +369,7 @@ def indentr(model, wdir, infile, aux_file, toab_gmean):
         input='{} -sub -yearmonmean -reci {} -yearmonmean -reci {}'.format(
             vertenergy_file, infile[4], infile[6]),
         output=aux_file)
-    vertentr_mean = write_eb('rlut', 'sver', aux_file, vertentropy_file,
+    vertentr_mean = write_eb('sver', aux_file, vertentropy_file,
                              vertentropy_mean_file)
     remove_files = [
         horzentropy_mean_file, vertenergy_file, vertentropy_mean_file
@@ -761,14 +761,14 @@ def wmbudg(model, wdir, aux_file, filedict, auxlist):
     removeif(aux_file)
     cdo.sub(input="{} {}".format(auxlist[0], filedict['/pr_']),
             output=aux_file)
-    wmass_gmean = write_eb('hfls', 'wmb', aux_file, wmbudg_file, wm_gmean_file)
+    wmass_gmean = write_eb('wmb', aux_file, wmbudg_file, wm_gmean_file)
     removeif(aux_file)
     cdo.sub(
         input="{} -add -mulc,{} {} -mulc,{} {}".format(
             filedict['/hfls_'], str(LC_SUB), filedict['/prsn_'], str(L_C),
             auxlist[1]),
         output=aux_file)
-    latent_gmean = write_eb('hfls', 'latent', aux_file, latene_file,
+    latent_gmean = write_eb('latent', aux_file, latene_file,
                             latene_gmean_file)
     varlist = [wmass_gmean, latent_gmean]
     filelist = [wmbudg_file, latene_file]
@@ -778,7 +778,7 @@ def wmbudg(model, wdir, aux_file, filedict, auxlist):
     return varlist, filelist
 
 
-def write_eb(namein, nameout, aux_file, d3_file, gmean_file):
+def write_eb(nameout, aux_file, d3_file, gmean_file):
     """Change variable name in the NetCDF file and compute averages.
 
     Arguments:
@@ -790,6 +790,8 @@ def write_eb(namein, nameout, aux_file, d3_file, gmean_file):
       averaged fields;
     """
     cdo = Cdo()
+    namein = cdo.showname(input=aux_file)
+    namein = str(namein)
     ch_name = '{},{}'.format(namein, nameout)
     cdo.chname(ch_name, input=aux_file, options='-b F32', output=d3_file)
     cdo.fldmean(
