@@ -57,7 +57,8 @@ def init_mkthe_direntr(model, wdir, filedict, te_file, flags):
     flags: (wat: a flag for the water mass budget module (y or n),
             entr: a flag for the material entropy production (y or n);
             met: a flag for the material entropy production method
-            (1: indirect, 2, direct, 3: both));
+            (1: indirect, 2, direct, 3: both);
+            evap: a flag for the evaporation flux);
 
     Returns:
     -------
@@ -123,7 +124,8 @@ def init_mkthe_lec(model, wdir, filedict):
     flags: (wat: a flag for the water mass budget module (y or n),
             entr: a flag for the material entropy production (y or n);
             met: a flag for the material entropy production method
-            (1: indirect, 2, direct, 3: both));
+                 (1: indirect, 2, direct, 3: both);
+            evap: a flag for the evaporation flux);
 
     Returns
     ------

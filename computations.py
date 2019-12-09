@@ -737,7 +737,7 @@ def snowentr(model, wdir, infile, aux_file):
     return snowentr_gmean, latsnow_file, snowentr_file
 
 
-def wmbudg(model, wdir, aux_file, filedict, auxlist):
+def wmbudg(model, wdir, aux_file, filedict, auxlist, flags):
     """Compute the water mass and latent energy budgets.
 
     This function computes the annual mean water mass and latent energy budgets
@@ -752,6 +752,12 @@ def wmbudg(model, wdir, aux_file, filedict, auxlist):
     - aux_file: the name of a dummy aux. file to be used for computations;
     - filedict: a dictionary of file names containing the input fields;
     - auxlist: a list of auxiliary files;
+    - flags: (wat: a flag for the water mass budget module (y or n),
+              entr: a flag for the material entropy production (y or n);
+              met: a flag for the material entropy production method
+              (1: indirect, 2: direct, 3: both);
+              evap: a flag for the method to retrieve the evap. fluxes
+              (1: from heat fluxes, 2: from the original field)
     """
     cdo = Cdo()
     wmbudg_file = wdir + '/{}_wmb.nc'.format(model)
@@ -763,11 +769,18 @@ def wmbudg(model, wdir, aux_file, filedict, auxlist):
             output=aux_file)
     wmass_gmean = write_eb('wmb', aux_file, wmbudg_file, wm_gmean_file)
     removeif(aux_file)
-    cdo.sub(
-        input="{} -add -mulc,{} {} -mulc,{} {}".format(
+    if flags[4] == '1':
+        cdo.sub(
+            input="{} -add -mulc,{} {} -mulc,{} {}".format(
             filedict['/hfls_'], str(LC_SUB), filedict['/prsn_'], str(L_C),
             auxlist[1]),
-        output=aux_file)
+            output=aux_file)
+    elif flags[4] == '2':
+        cdo.sub(
+            input="-mulc,{} {} -add -mulc,{} {} -mulc,{} {}".format(
+            str(L_C), filedict['/evap_'], str(LC_SUB), filedict['/prsn_'],
+            str(L_C), auxlist[1]),
+            output=aux_file)
     latent_gmean = write_eb('latent', aux_file, latene_file,
                             latene_gmean_file)
     varlist = [wmass_gmean, latent_gmean]

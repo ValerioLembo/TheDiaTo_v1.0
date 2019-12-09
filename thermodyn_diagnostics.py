@@ -155,7 +155,7 @@ for model in models:
         aux_list = mkthe.init_mkthe_wat(model, wdir, dict_basic,
                                         flags=flag)
         wm_gmean, wm_file = comp.wmbudg(model, wdir, aux_file, dict_basic,
-                                        aux_list)
+                                        aux_list, flags)
         wmb_all[i_m, 0] = np.nanmean(wm_gmean[0])
         wmb_all[i_m, 1] = np.nanstd(wm_gmean[0])
         logger.info('Water mass budget: %s\n', wmb_all[i_m, 0])
