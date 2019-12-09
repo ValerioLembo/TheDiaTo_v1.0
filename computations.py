@@ -804,7 +804,7 @@ def write_eb(nameout, aux_file, d3_file, gmean_file):
     """
     cdo = Cdo()
     namein = cdo.showname(input=aux_file)
-    namein = str(namein)
+    namein = str(namein[0])
     ch_name = '{},{}'.format(namein, nameout)
     cdo.chname(ch_name, input=aux_file, options='-b F32', output=d3_file)
     cdo.fldmean(
