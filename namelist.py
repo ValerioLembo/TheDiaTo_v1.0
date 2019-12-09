@@ -43,6 +43,8 @@ wat = 'False' # Flag for the water and latent energy budget
 lec = 'False' # Flag for the LEC
 entr = 'True' # Flag for the MEP
 met = '1' # Option for the MEP method
+evap = '2' # Option for the evaporation flux (1 if it has to be computed from
+           # the latent heat fluxes, 2 if the field is provided)
 
-flagin = [lsm, wat, lec, entr, met]
+flagin = [lsm, wat, lec, entr, met, evap]
 logfile = 'log_{}.txt'.format(date) # Put the desired name for the log here

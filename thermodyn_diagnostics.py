@@ -48,6 +48,7 @@ list_basic=[
     '/hfls_', '/hfss_', '/rlds_', '/rlus_', '/rlut_',
     '/rsds_', '/rsdt_', '/rsus_', '/rsut_']
 list_wat=['/pr_', '/prsn_']
+list_wat_2=['/pr_', '/prsn_', '/evap_']
 list_lec=['/ta_', '/tas_', '/ua_', '/uas_', '/va_', '/vas_', '/wap_']
 list_indentr=['/ts_']
 list_direntr=['/hus_', '/pr_', '/prsn_','/ps_', 'uas_', 'vas_', '/ts_']
@@ -63,7 +64,7 @@ logger.info('Work directory: %s \n', direc[2])
 logger.info('Plot directory: %s \n', direc[1])
 plotsmod = plot_script
 logger.info('model_names')
-flag = [flagin[1], flagin[2], flagin[3], flagin[4]]
+flag = [flagin[1], flagin[2], flagin[3], flagin[4], flagin[5]]
 # Initialize multi-model arrays
 modnum = len(models)
 te_all = np.zeros(modnum)
@@ -141,6 +142,8 @@ for model in models:
     logger.info('Done\n')
     # Water mass budget
     if flagin[1] == 'True':
+        if flagin[5] == '2':
+            list_wat = list_wat_2
         for i in list_wat:
             for name in filenames:
                 if i in name:

@@ -67,7 +67,7 @@ def init_mkthe_direntr(model, wdir, filedict, te_file, flags):
     cdo = Cdo()
     met = flags[3]
     if met in {'2', '3'}:
-        evspsbl_file, prr_file = wfluxes(model, wdir, filedict)
+        evspsbl_file, prr_file = wfluxes(model, wdir, filedict, flags)
         hfss_file = filedict['/hfss_']
         hus_file = filedict['/hus_']
         ps_file = filedict['/ps_']
@@ -179,16 +179,16 @@ def init_mkthe_wat(model, wdir, filedict, flags):
     flags: (wat: a flag for the water mass budget module (y or n),
             entr: a flag for the material entropy production (y or n);
             met: a flag for the material entropy production method
-            (1: indirect, 2, direct, 3: both));
+            (1: indirect, 2: direct, 3: both));
+            evap: a flag for the method to retrieve the evap. fluxes
+            (1: from heat fluxes, 2: from the original field)
 
     Returns
     ------
     A list of input fields.
     """
-    wat = flags[0]
-    if wat == 'True':
-        evspsbl_file, prr_file = wfluxes(model, wdir, filedict)
-        aux_files = [evspsbl_file, prr_file]
+    evspsbl_file, prr_file = wfluxes(model, wdir, filedict, flags)            
+    aux_files = [evspsbl_file, prr_file]
     return aux_files
 
 
@@ -332,7 +332,7 @@ def removeif(filename):
         pass
 
 
-def wfluxes(model, wdir, filedict):
+def wfluxes(model, wdir, filedict, flags):
     """Compute auxiliary fields and perform time averaging of existing fields.
 
     Arguments:
@@ -344,12 +344,16 @@ def wfluxes(model, wdir, filedict):
     Valerio Lembo, University of Hamburg (2019).
     """
     cdo = Cdo()
-    hfls_file = filedict['/hfls_']
+    evap = flags[5]
+    if evap == '1':
+        hfls_file = filedict['/hfls_']
+        evspsbl_file = (wdir + '/{}_evspsbl.nc'.format(model))
+        cdo.divc(str(L_C), input="{}".format(hfls_file), output=evspsbl_file)
+    elif evap == '2':
+        evspsbl_file = filedict['/evap_']
     pr_file = filedict['/pr_']
     prsn_file = filedict['/prsn_']
     aux_file = wdir + '/aux.nc'
-    evspsbl_file = (wdir + '/{}_evspsbl.nc'.format(model))
-    cdo.divc(str(L_C), input="{}".format(hfls_file), output=evspsbl_file)
     # Rainfall precipitation
     prr_file = wdir + '/{}_prr.nc'.format(model)
     cdo.sub(input="{} {}".format(pr_file, prsn_file), output=aux_file)
