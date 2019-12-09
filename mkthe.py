@@ -344,7 +344,7 @@ def wfluxes(model, wdir, filedict, flags):
     Valerio Lembo, University of Hamburg (2019).
     """
     cdo = Cdo()
-    evap = flags[5]
+    evap = flags[4]
     if evap == '1':
         hfls_file = filedict['/hfls_']
         evspsbl_file = (wdir + '/{}_evspsbl.nc'.format(model))
