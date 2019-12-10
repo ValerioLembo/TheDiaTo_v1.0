@@ -178,7 +178,6 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
     output(ae2az, d_s, filenc, 'ae2az', nc_f)
     nc_f = outpath + '/ke2kz_tmap_{}_{}.nc'.format(model, year)
     output(ke2kz, d_s, filenc, 'ke2kz', nc_f)
-    logfile.close()
     return lec_strength
 
 
@@ -445,7 +444,7 @@ def init(logfile, filep):
     ua_c = ua_r + 1j * ua_i
     va_c = va_r + 1j * va_i
     wap_c = wap_r + 1j * wap_i
-    with open(logfile, 'w') as log:
+    with open(logfile, 'a+') as log:
         log.write(' \n')
         log.write(' \n')
         log.write('INPUT DATA:\n')
@@ -1092,7 +1091,7 @@ def write_to_tab(logfile, name, vared, varzon):
     - varzon: an array containing the zonal mean component;
     """
     vartot = varzon + vared[0]
-    with open(logfile, 'w') as log:
+    with open(logfile, 'a+') as log:
         log.write(' {} TOTAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(
             name, vartot[0], vartot[1], vartot[2]))
         log.write('--------------------------------------\n')
