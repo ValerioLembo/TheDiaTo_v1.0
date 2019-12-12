@@ -133,15 +133,15 @@ def budgets(model, wdir, aux_file, filedict):
     - filedict: a list of file names containing the input fields;
     """
     cdo = Cdo()
-    hfls_file = filedict['hfls']
-    hfss_file = filedict['hfss']
-    rlds_file = filedict['rlds']
-    rlus_file = filedict['rlus']
-    rlut_file = filedict['rlut']
-    rsds_file = filedict['rsds']
-    rsdt_file = filedict['rsdt']
-    rsus_file = filedict['rsus']
-    rsut_file = filedict['rsut']
+    hfls_file = filedict['/hfls_']
+    hfss_file = filedict['/hfss_']
+    rlds_file = filedict['/rlds_']
+    rlus_file = filedict['/rlus_']
+    rlut_file = filedict['/rlut_']
+    rsds_file = filedict['/rsds_']
+    rsdt_file = filedict['/rsdt_']
+    rsus_file = filedict['/rsus_']
+    rsut_file = filedict['/rsut_']
     toab_file = wdir + '/{}_toab.nc'.format(model)
     toab_gmean_file = wdir + '/{}_toab_gmean.nc'.format(model)
     surb_file = wdir + '/{}_surb.nc'.format(model)
@@ -153,7 +153,7 @@ def budgets(model, wdir, aux_file, filedict):
     cdo.sub(
         input="-sub {} {} {}".format(rsdt_file, rsut_file, rlut_file),
         output=aux_file)
-    toab_gmean = write_eb('rsdt', 'toab', aux_file, toab_file, toab_gmean_file)
+    toab_gmean = write_eb('toab', aux_file, toab_file, toab_gmean_file)
     toab_ymm_file = wdir + '/{}_toab_ymm.nc'.format(model)
     cdo.yearmonmean(input=toab_file, output=toab_ymm_file)
     # Surface energy budget
@@ -163,11 +163,11 @@ def budgets(model, wdir, aux_file, filedict):
         input="-sub -sub -sub {} {} {} {} {}".format(
             aux_surb_file, rsus_file, rlus_file, hfls_file, hfss_file),
         output=aux_file)
-    surb_gmean = write_eb('rsds', 'surb', aux_file, surb_file, surb_gmean_file)
+    surb_gmean = write_eb('surb', aux_file, surb_file, surb_gmean_file)
     # Atmospheric energy budget
     removeif(aux_file)
     cdo.sub(input="{} {}".format(toab_file, surb_file), output=aux_file)
-    atmb_gmean = write_eb('toab', 'atmb', aux_file, atmb_file, atmb_gmean_file)
+    atmb_gmean = write_eb('atmb', aux_file, atmb_file, atmb_gmean_file)
     eb_gmean = [toab_gmean, atmb_gmean, surb_gmean]
     eb_file = [toab_file, atmb_file, surb_file]
     # Delete files
@@ -205,7 +205,7 @@ def direntr(logger, model, wdir, filedict, aux_file, lect, lec, flags):
     be computed, if using the indirect, the direct method, or both methods;
     """
     import mkthe
-    _, _, _, aux_files = mkthe.init_mkthe(model, wdir, filedict, flags)
+    _, _, _, aux_files = mkthe.init_mkthe_direntr(model, wdir, filedict, flags)
     htop_file = aux_files[1]
     prr_file = aux_files[2]
     tabl_file = aux_files[3]
@@ -213,10 +213,10 @@ def direntr(logger, model, wdir, filedict, aux_file, lect, lec, flags):
     tcloud_file = aux_files[5]
     tcolumn_file = aux_files[6]
     tlcl_file = aux_files[7]
-    hfls_file = filedict['hfls']
-    hfss_file = filedict['hfss']
-    prsn_file = filedict['prsn']
-    ts_file = filedict['ts']
+    hfls_file = filedict['/hfls_']
+    hfss_file = filedict['/hfss_']
+    prsn_file = filedict['/prsn_']
+    ts_file = filedict['/ts_']
     logger.info('Computation of the material entropy '
                 'production with the direct method\n')
     logger.info('1. Sensible heat fluxes\n')
@@ -267,8 +267,8 @@ def direntr(logger, model, wdir, filedict, aux_file, lect, lec, flags):
     logger.info('Material entropy production with '
                 'the direct method: %s\n', matentr)
     irrevers = ((matentr - float(skin)) / float(skin))
-    for filen in aux_files:
-        os.remove(filen)
+    # for filen in aux_files:
+    #    os.remove(filen)
     entr_list = [
         sensentr_file, evapentr_file, rainentr_file, snowentr_file,
         meltentr_file, potentr_file
@@ -301,7 +301,7 @@ def entr(filelist, nin, nout, entr_file, entr_mean_file):
         input='-yearmonmean -monmean -div {} {}'.format(en_file, tem_file),
         options='-b F32',
         output=aux_file)
-    entr_gmean = write_eb(nin, nout, aux_file, entr_file, entr_mean_file)
+    entr_gmean = write_eb(nout, aux_file, entr_file, entr_mean_file)
     return entr_gmean
 
 
@@ -359,7 +359,7 @@ def indentr(model, wdir, infile, aux_file, toab_gmean):
         input='-mulc,-1 -div -subc,{}  {}  {}'.format(
             np.nanmean(toab_gmean), infile[5], infile[4]),
         output=aux_file)
-    horzentr_mean = write_eb('toab', 'shor', aux_file, horzentropy_file,
+    horzentr_mean = write_eb('shor', aux_file, horzentropy_file,
                              horzentropy_mean_file)
     cdo.yearmonmean(
         input=' -add {} -sub {} -add {} {}'.format(infile[0], infile[2],
@@ -369,7 +369,7 @@ def indentr(model, wdir, infile, aux_file, toab_gmean):
         input='{} -sub -yearmonmean -reci {} -yearmonmean -reci {}'.format(
             vertenergy_file, infile[4], infile[6]),
         output=aux_file)
-    vertentr_mean = write_eb('rlut', 'sver', aux_file, vertentropy_file,
+    vertentr_mean = write_eb('sver', aux_file, vertentropy_file,
                              vertentropy_mean_file)
     remove_files = [
         horzentropy_mean_file, vertenergy_file, vertentropy_mean_file
@@ -741,7 +741,7 @@ def snowentr(model, wdir, infile, aux_file):
     return snowentr_gmean, latsnow_file, snowentr_file
 
 
-def wmbudg(model, wdir, aux_file, filedict, auxlist):
+def wmbudg(model, wdir, aux_file, filedict, auxlist, flags):
     """Compute the water mass and latent energy budgets.
 
     This function computes the annual mean water mass and latent energy budgets
@@ -756,6 +756,12 @@ def wmbudg(model, wdir, aux_file, filedict, auxlist):
     - aux_file: the name of a dummy aux. file to be used for computations;
     - filedict: a dictionary of file names containing the input fields;
     - auxlist: a list of auxiliary files;
+    - flags: (wat: a flag for the water mass budget module (y or n),
+              entr: a flag for the material entropy production (y or n);
+              met: a flag for the material entropy production method
+              (1: indirect, 2: direct, 3: both);
+              evap: a flag for the method to retrieve the evap. fluxes
+              (1: from heat fluxes, 2: from the original field)
     """
     cdo = Cdo()
     wmbudg_file = wdir + '/{}_wmb.nc'.format(model)
@@ -763,16 +769,23 @@ def wmbudg(model, wdir, aux_file, filedict, auxlist):
     latene_file = wdir + '/{}_latent.nc'.format(model)
     latene_gmean_file = wdir + '/{}_latent_gmean.nc'.format(model)
     removeif(aux_file)
-    cdo.sub(input="{} {}".format(auxlist[0], filedict['pr_']),
+    cdo.sub(input="{} {}".format(auxlist[0], filedict['/pr_']),
             output=aux_file)
-    wmass_gmean = write_eb('hfls', 'wmb', aux_file, wmbudg_file, wm_gmean_file)
+    wmass_gmean = write_eb('wmb', aux_file, wmbudg_file, wm_gmean_file)
     removeif(aux_file)
-    cdo.sub(
-        input="{} -add -mulc,{} {} -mulc,{} {}".format(
-            filedict['hfls'], str(LC_SUB), filedict['prsn'], str(L_C),
+    if flags[4] == '1':
+        cdo.sub(
+            input="{} -add -mulc,{} {} -mulc,{} {}".format(
+            filedict['/hfls_'], str(LC_SUB), filedict['/prsn_'], str(L_C),
             auxlist[1]),
-        output=aux_file)
-    latent_gmean = write_eb('hfls', 'latent', aux_file, latene_file,
+            output=aux_file)
+    elif flags[4] == '2':
+        cdo.sub(
+            input="-mulc,{} {} -add -mulc,{} {} -mulc,{} {}".format(
+            str(L_C), filedict['/evap_'], str(LC_SUB), filedict['/prsn_'],
+            str(L_C), auxlist[1]),
+            output=aux_file)
+    latent_gmean = write_eb('latent', aux_file, latene_file,
                             latene_gmean_file)
     varlist = [wmass_gmean, latent_gmean]
     filelist = [wmbudg_file, latene_file]
@@ -782,7 +795,7 @@ def wmbudg(model, wdir, aux_file, filedict, auxlist):
     return varlist, filelist
 
 
-def write_eb(namein, nameout, aux_file, d3_file, gmean_file):
+def write_eb(nameout, aux_file, d3_file, gmean_file):
     """Change variable name in the NetCDF file and compute averages.
 
     Arguments:
@@ -794,6 +807,8 @@ def write_eb(namein, nameout, aux_file, d3_file, gmean_file):
       averaged fields;
     """
     cdo = Cdo()
+    namein = cdo.showname(input=aux_file)
+    namein = str(namein[0])
     ch_name = '{},{}'.format(namein, nameout)
     cdo.chname(ch_name, input=aux_file, options='-b F32', output=d3_file)
     cdo.fldmean(

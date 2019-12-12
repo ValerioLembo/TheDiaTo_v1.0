@@ -30,7 +30,10 @@ For additional information and user manual see README.md
 
 2019-04-29: a stand-alone version of TheDiaTo v1.0 is branched from ESMValTool
             v2.0b repository;
-
+2019-11-15: the script ingests a different number of input fields, depending
+            on the options chosen by the user;
+2019-12-09: the water mass budget can be computed from input fields containing
+            evaporation fluxes, if available;
 #############################################################################
 """
 
@@ -45,11 +48,13 @@ from namelist import direc, models, flagin, logfile
 import computations, lorenz_cycle, mkthe, plot_script
 
 list_basic=[
-    'hfls','hfss','rlds','rlus','rlut','rsds','rsdt','rsus','rsut']
-list_wat=['pr_','prsn']
-list_lec=['ta_','tas','ua_','uas','va_','vas','wap']
-list_indentr=['ts']
-list_direntr=['hus','pr_','prsn','ps','ts']
+    '/hfls_', '/hfss_', '/rlds_', '/rlus_', '/rlut_',
+    '/rsds_', '/rsdt_', '/rsus_', '/rsut_']
+list_wat=['/pr_', '/prsn_']
+list_wat_2=['/pr_', '/prsn_', '/evap_']
+list_lec=['/ta_', '/tas_', '/ua_', '/uas_', '/va_', '/vas_', '/wap_']
+list_indentr=['/ts_']
+list_direntr=['/hus_', '/pr_', '/prsn_','/ps_', 'uas_', 'vas_', '/ts_']
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 logging.basicConfig(filename=logfile, level=logging.INFO)
 logger = logging.getLogger(__file__)
@@ -62,7 +67,7 @@ logger.info('Work directory: %s \n', direc[2])
 logger.info('Plot directory: %s \n', direc[1])
 plotsmod = plot_script
 logger.info('model_names')
-flag = [flagin[1], flagin[2], flagin[3], flagin[4]]
+flag = [flagin[1], flagin[2], flagin[3], flagin[4], flagin[5]]
 # Initialize multi-model arrays
 modnum = len(models)
 te_all = np.zeros(modnum)
@@ -110,13 +115,8 @@ for model in models:
                 dict_basic[i] = name
                 #exec("%s_file = '%s'" % (i,name))
     print(dict_basic)
-    #rlds_file = filenames[6]
-    #rlus_file = filenames[7]
-    #rsds_file = filenames[9]
-    #rsus_file = filenames[11]
-    #ts_file = filenames[15]
     aux_file = wdir + '/aux.nc'
-    te_ymm_file, te_gmean_constant, _, _ = mkthe.init_mkthe(
+    te_ymm_file, te_gmean_constant, te_file = mkthe.init_mkthe_te(
         model, wdir, dict_basic)
     te_all[i_m] = te_gmean_constant
     logger.info('Computing energy budgets\n')
@@ -145,16 +145,17 @@ for model in models:
     logger.info('Done\n')
     # Water mass budget
     if flagin[1] == 'True':
+        if flagin[5] == '2':
+            list_wat = list_wat_2
         for i in list_wat:
             for name in filenames:
                 if i in name:
                     dict_basic[i] = name
-        print(dict_basic)
         logger.info('Computing water mass and latent energy budgets\n')
-        _, _, _, aux_list = mkthe.init_mkthe(model, wdir, dict_basic,
-                                             flags=flag)
+        aux_list = mkthe.init_mkthe_wat(model, wdir, dict_basic,
+                                        flags=flag)
         wm_gmean, wm_file = comp.wmbudg(model, wdir, aux_file, dict_basic,
-                                        aux_list)
+                                        aux_list, flags=flag)
         wmb_all[i_m, 0] = np.nanmean(wm_gmean[0])
         wmb_all[i_m, 1] = np.nanstd(wm_gmean[0])
         logger.info('Water mass budget: %s\n', wmb_all[i_m, 0])
@@ -241,14 +242,12 @@ for model in models:
                 for name in filenames:
                     if i in name:
                         dict_basic[i] = name
-            print(dict_basic)
-            _, _, te_file, _ = mkthe.init_mkthe(model, wdir, dict_basic,
-                                                flags=flag)
             logger.info('Computation of the material entropy production '
                         'with the indirect method\n')
             indentr_list = [
-                dict_basic['rlds'], dict_basic['rlus'], dict_basic['rsds'],
-                dict_basic['rsus'], te_file, eb_file[0], dict_basic['ts']
+                dict_basic['/rlds_'], dict_basic['/rlus_'],
+                dict_basic['/rsds_'], dict_basic['/rsus_'],
+                te_file, eb_file[0], dict_basic['/ts_']
             ]
             horz_mn, vert_mn, horzentr_file, vertentr_file = comp.indentr(
                 model, wdir, indentr_list, aux_file, eb_gmean[0])

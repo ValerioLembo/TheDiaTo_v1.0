@@ -45,131 +45,153 @@ L_C = 2501000  # latent heat of condensation
 SIGMAINV = 17636684.3034  # inverse of the Stefan-Boltzmann constant
 
 
-def init_mkthe(model, wdir, filedict, flags=None):
+def init_mkthe_direntr(model, wdir, filedict, te_file, flags):
+    """Compute the MEP with the direct method.
+
+    Arguments:
+    ---------
+    model: the model name;
+    wdir: the working directory where the outputs are stored;
+    filedict: a dictionary of file names containing the input fields;
+    te_file: a file containing the emission temperature computed from OLR;
+    flags: (wat: a flag for the water mass budget module (y or n),
+            entr: a flag for the material entropy production (y or n);
+            met: a flag for the material entropy production method
+            (1: indirect, 2, direct, 3: both);
+            evap: a flag for the evaporation flux);
+
+    Returns:
+    -------
+    A list of files cotiaining the components of the MEP with the direct
+    method.
+    """
+    cdo = Cdo()
+    met = flags[3]
+    if met in {'2', '3'}:
+        evspsbl_file, prr_file = wfluxes(model, wdir, filedict, flags)
+        hfss_file = filedict['/hfss_']
+        hus_file = filedict['/hus_']
+        ps_file = filedict['/ps_']
+        ts_file = filedict['/ts_']
+        uas_file = filedict['/uas_']
+        vas_file = filedict['/vas_']
+        uasmn_file = wdir + '/{}_uas_mm.nc'.format(model)
+        uasmn_file = mon_from_day(wdir, model, 'uas', uas_file)
+        uas_file = uasmn_file
+        vasmn_file = wdir + '/{}_uas_mm.nc'.format(model)
+        vasmn_file = mon_from_day(wdir, model, 'vas', vas_file)
+        vas_file = vasmn_file
+        mk_list = [
+            ts_file, hus_file, ps_file, uas_file, vas_file, hfss_file, te_file
+        ]
+        htop_file, tabl_file, tlcl_file = mkthe_main(wdir, mk_list, model)
+        # Working temperatures for the hydrological cycle
+        tcloud_file = (wdir + '/{}_tcloud.nc'.format(model))
+        removeif(tcloud_file)
+        cdo.mulc('0.5',
+                 input='-add {} {}'.format(tlcl_file, te_file),
+                 options='-b F32',
+                 output=tcloud_file)
+        tcolumn_file = (wdir + '/{}_t_vertav_pot.nc'.format(model))
+        removeif(tcolumn_file)
+        cdo.mulc('0.5',
+                 input='-add {} {}'.format(ts_file, tcloud_file),
+                 options='-b F32',
+                 output=tcolumn_file)
+        # Working temperatures for the kin. en. diss. (updated)
+        tasvert_file = (wdir + '/{}_tboundlay.nc'.format(model))
+        removeif(tasvert_file)
+        cdo.fldmean(input='-mulc,0.5 -add {} {}'.format(ts_file, tabl_file),
+                    options='-b F32',
+                    output=tasvert_file)
+        aux_files = [
+            evspsbl_file, htop_file, prr_file, tabl_file, tasvert_file,
+            tcloud_file, tcolumn_file, tlcl_file
+        ]
+    else:
+        aux_files = []
+    return aux_files
+
+
+def init_mkthe_lec(model, wdir, filedict):
     """Compute auxiliary fields or perform time averaging of existing fields.
 
     Arguments:
-    - model: the model name;
-    - wdir: the working directory where the outputs are stored;
-    - filedict: a file or a list of files containing the input fields;
-    - flags: (wat: a flag for the water mass budget module (y or n),
-              lec: a flag for the Lorenz Energy Cycle (y or n),
-              entr: a flag for the material entropy production (y or n);
-              met: a flag for the material entropy production method
-              (1: indirect, 2, direct, 3: both));
+    ---------
+    model: the model name;
+    wdir: the working directory where the outputs are stored;
+    filedict: a dictionary of file names containing the input fields;
+    flags: (wat: a flag for the water mass budget module (y or n),
+            entr: a flag for the material entropy production (y or n);
+            met: a flag for the material entropy production method
+                 (1: indirect, 2, direct, 3: both);
+            evap: a flag for the evaporation flux);
 
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
+    Returns
+    ------
+    The file containing monthly mean near-surface velocities in the zonal and
+    meridional direction.
+    """
+    uas_file = filedict['/uas_']
+    vas_file = filedict['/vas_']
+    uasmn_file = mon_from_day(wdir, model, 'uas', uas_file)
+    vasmn_file = mon_from_day(wdir, model, 'vas', vas_file)
+    return uasmn_file, vasmn_file
+
+
+def init_mkthe_te(model, wdir, filedict):
+    """Compute auxiliary fields or perform time averaging of existing fields.
+
+    Arguments:
+    ---------
+    model: the model name;
+    wdir: the working directory where the outputs are stored;
+    filedict: a dictionary containing the input fields;
+
+    Returns
+    ------
+    A file containing annual mean emission temperature fields, the time mean
+    globally averaged emission temperature, the file containing emission
+    temperature fields.
     """
     cdo = Cdo()
+    rlut_file = filedict['/rlut_']
+    # Compute monthly mean fields from 2D surface daily fields
     # emission temperature
-    rlut_file = filedict['rlut']
     te_file = wdir + '/{}_te.nc'.format(model)
-    cdo.sqrt(
-        input="-sqrt -mulc,{} {}".format(SIGMAINV, rlut_file), output=te_file)
+    cdo.sqrt(input="-sqrt -mulc,{} {}".format(SIGMAINV, rlut_file),
+             output=te_file)
     te_ymm_file = wdir + '/{}_te_ymm.nc'.format(model)
     cdo.yearmonmean(input=te_file, output=te_ymm_file)
     te_gmean_file = wdir + '/{}_te_gmean.nc'.format(model)
-    cdo.timmean(
-        input='-fldmean -setctomiss,nan -setmissval,nan {}'.format(
-        te_ymm_file), output=te_gmean_file)
+    cdo.timmean(input='-fldmean {}'.format(te_ymm_file), output=te_gmean_file)
     with Dataset(te_gmean_file) as f_l:
         te_gmean_constant = f_l.variables['rlut'][0, 0, 0]
-    os.remove(te_gmean_file)
-    aux_files = []
-    if flags:
-        wat = flags[0]
-        lec = flags[1]
-        entr = flags[2]
-        met = flags[3]
-        if wat is 'True':
-            evspsbl_file, prr_file = wfluxes(model, wdir, filedict)
-            aux_files = [evspsbl_file, prr_file]
-            return te_ymm_file, te_gmean_constant, te_file, aux_files
-        if lec is 'True':
-            tas_file = filedict['tas']
-            uas_file = filedict['uas']
-            vas_file = filedict['vas']
-            # Compute monthly mean fields from 2D surface daily fields
-            aux_file = wdir + '/aux.nc'
-            cdo.selvar('tas', input=tas_file, output=aux_file)
-            move(aux_file, tas_file)
-            tasmn_file = wdir + '/{}_tas_mm.nc'.format(model)
-            cdo.selvar(
-                'tas',
-                input='-monmean {}'.format(tas_file),
-                option='-b F32',
-                output=tasmn_file)
-            cdo.selvar('uas', input=uas_file, output=aux_file)
-            move(aux_file, uas_file)
-            uasmn_file = wdir + '/{}_uas_mm.nc'.format(model)
-            cdo.selvar(
-                'uas',
-                input='-monmean {}'.format(uas_file),
-                option='-b F32',
-                output=uasmn_file)
-            cdo.selvar('vas', input=vas_file, output=aux_file)
-            move(aux_file, vas_file)
-            vasmn_file = wdir + '/{}_vas_mm.nc'.format(model)
-            cdo.selvar(
-                'vas',
-                input='-monmean {}'.format(vas_file),
-                option='-b F32',
-                output=vasmn_file)
-            aux_files = []
-            return te_ymm_file, te_gmean_constant, te_file, aux_files
-        if entr is 'True':
-            if met in {'2', '3'}:
-                if wat is 'False':
-                    evspsbl_file, prr_file = wfluxes(model, wdir, filedict)
-                hfss_file = filedict['hfss']
-                hus_file = filedict['hus']
-                ps_file = filedict['ps']
-                ts_file = filedict['ts']
-                mk_list = [
-                    ts_file, hus_file, ps_file, uasmn_file, vasmn_file,
-                    hfss_file, te_file
-                ]
-                htop_file, tabl_file, tlcl_file = mkthe_main(wdir, mk_list,
-                                                             model)
-                # Working temperatures for the hydrological cycle
-                tcloud_file = (wdir + '/{}_tcloud.nc'.format(model))
-                removeif(tcloud_file)
-                cdo.mulc(
-                    '0.5',
-                    input='-add {} {}'.format(tlcl_file, te_file),
-                    options='-b F32',
-                    output=tcloud_file)
-                tcolumn_file = (wdir + '/{}_t_vertav_pot.nc'.format(model))
-                removeif(tcolumn_file)
-                cdo.mulc(
-                    '0.5',
-                    input='-add {} {}'.format(ts_file, tcloud_file),
-                    options='-b F32',
-                    output=tcolumn_file)
-                # Working temperatures for the kin. en. diss. (updated)
-                tasvert_file = (wdir + '/{}_tboundlay.nc'.format(model))
-                removeif(tasvert_file)
-                cdo.fldmean(
-                    input='-setctomiss,nan -setmissval,nan -mulc,0.5 -add {} {}'
-                    .format(ts_file, tabl_file),
-                    options='-b F32',
-                    output=tasvert_file)
-                aux_files = [
-                    evspsbl_file, htop_file, prr_file, tabl_file, tasvert_file,
-                    tcloud_file, tcolumn_file, tlcl_file
-                ]
-                remove_files = [tasmn_file, uasmn_file, vasmn_file]
-                for filen in remove_files:
-                    os.remove(filen)
-                return te_ymm_file, te_gmean_constant, te_file, aux_files
-            else:
-                aux_files = []
-                return te_ymm_file, te_gmean_constant, te_file, aux_files
-        else:
-            aux_files = []
-            return te_ymm_file, te_gmean_constant, te_file, aux_files
-    return te_ymm_file, te_gmean_constant, te_file, aux_files
+    return te_ymm_file, te_gmean_constant, te_file
+
+
+def init_mkthe_wat(model, wdir, filedict, flags):
+    """Compute auxiliary fields or perform time averaging of existing fields.
+
+    Arguments:
+    ---------
+    model: the model name;
+    wdir: the working directory where the outputs are stored;
+    filedict: a dictionary containing the input fields;
+    flags: (wat: a flag for the water mass budget module (y or n),
+            entr: a flag for the material entropy production (y or n);
+            met: a flag for the material entropy production method
+            (1: indirect, 2: direct, 3: both));
+            evap: a flag for the method to retrieve the evap. fluxes
+            (1: from heat fluxes, 2: from the original field)
+
+    Returns
+    ------
+    A list of input fields.
+    """
+    evspsbl_file, prr_file = wfluxes(model, wdir, filedict, flags)            
+    aux_files = [evspsbl_file, prr_file]
+    return aux_files
 
 
 def input_data(wdir, file_list):
@@ -278,6 +300,32 @@ def mkthe_main(wdir, file_list, modelname):
     return htop_file, tabl_file, tlcl_file
 
 
+def mon_from_day(wdir, model, name, filein):
+    """Compute monthly mean from daily mean.
+
+    Arguments:
+    ---------
+    wdir: the working directory path;
+    model: the model name;
+    name: the name of the field to be averaged;
+    filein: the input file containing the field to be averaged;
+
+    Returns
+    -------
+    The name of the file containing the monthly averaged field.
+    """
+    cdo = Cdo()
+    fileaux = wdir + '/aux.nc'
+    cdo.selvar(name, input=filein, output=fileaux)
+    move(fileaux, filein)
+    fileout = wdir + '/{}_{}_mm.nc'.format(model, name)
+    cdo.selvar(name,
+               input='-monmean {}'.format(filein),
+               option='-b F32',
+               output=fileout)
+    return fileout
+
+
 def removeif(filename):
     """Remove filename if it exists."""
     try:
@@ -286,7 +334,7 @@ def removeif(filename):
         pass
 
 
-def wfluxes(model, wdir, filedict):
+def wfluxes(model, wdir, filedict, flags):
     """Compute auxiliary fields and perform time averaging of existing fields.
 
     Arguments:
@@ -298,12 +346,16 @@ def wfluxes(model, wdir, filedict):
     Valerio Lembo, University of Hamburg (2019).
     """
     cdo = Cdo()
-    hfls_file = filedict['hfls']
-    pr_file = filedict['pr_']
-    prsn_file = filedict['prsn']
+    evap = flags[4]
+    if evap == '1':
+        hfls_file = filedict['/hfls_']
+        evspsbl_file = (wdir + '/{}_evspsbl.nc'.format(model))
+        cdo.divc(str(L_C), input="{}".format(hfls_file), output=evspsbl_file)
+    elif evap == '2':
+        evspsbl_file = filedict['/evap_']
+    pr_file = filedict['/pr_']
+    prsn_file = filedict['/prsn_']
     aux_file = wdir + '/aux.nc'
-    evspsbl_file = (wdir + '/{}_evspsbl.nc'.format(model))
-    cdo.divc(str(L_C), input="{}".format(hfls_file), output=evspsbl_file)
     # Rainfall precipitation
     prr_file = wdir + '/{}_prr.nc'.format(model)
     cdo.sub(input="{} {}".format(pr_file, prsn_file), output=aux_file)

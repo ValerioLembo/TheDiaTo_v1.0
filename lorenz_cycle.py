@@ -81,7 +81,7 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
         - plotfile: name of the file that will contain the flux diagram;
         - logfile: name of the file containing the table as a .txt file.
     """
-    ta_c, ua_c, va_c, wap_c, dims, lev, lat, log = init(logfile, filenc)
+    ta_c, ua_c, va_c, wap_c, dims, lev, lat = init(logfile, filenc)
     nlev = int(dims[0])
     ntime = int(dims[1])
     nlat = int(dims[2])
@@ -178,7 +178,6 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
     output(ae2az, d_s, filenc, 'ae2az', nc_f)
     nc_f = outpath + '/ke2kz_tmap_{}_{}.nc'.format(model, year)
     output(ke2kz, d_s, filenc, 'ke2kz', nc_f)
-    log.close()
     return lec_strength
 
 
@@ -445,7 +444,7 @@ def init(logfile, filep):
     ua_c = ua_r + 1j * ua_i
     va_c = va_r + 1j * va_i
     wap_c = wap_r + 1j * wap_i
-    with open(logfile, 'w') as log:
+    with open(logfile, 'a+') as log:
         log.write(' \n')
         log.write(' \n')
         log.write('INPUT DATA:\n')
@@ -466,7 +465,7 @@ def init(logfile, filep):
         log.write('  \n')
         log.write('                            I GLOBAL I NORTH I SOUTH I\n')
         log.write('------------------------------------------------------\n')
-    return ta_c, ua_c, va_c, wap_c, dims, lev, lat, log
+    return ta_c, ua_c, va_c, wap_c, dims, lev, lat
 
 
 def makek(u_t, v_t):
@@ -509,11 +508,11 @@ def mka2k(wap, t_t, w_g, t_g, p_l):
     - t_g: a temperature vertical profile;
     - p_l: the pressure levels;
     """
-    a2k = -(R / p_l[:, np.newaxis, np.newaxis] *
-            (t_t * np.conj(wap) + np.conj(t_t) * wap))
-    a2k[:, :, 0] = -(R / p_l[:, np.newaxis] *
-                     (t_t[:, :, 0] - t_g[:, np.newaxis]) *
-                     (wap[:, :, 0] - w_g[:, np.newaxis]))
+    a2k = -np.real(R / p_l[:, np.newaxis, np.newaxis] *
+                   (t_t * np.conj(wap) + np.conj(t_t) * wap))
+    a2k[:, :, 0] = -np.real(R / p_l[:, np.newaxis] *
+                           (t_t[:, :, 0] - t_g[:, np.newaxis]) *
+                           (wap[:, :, 0] - w_g[:, np.newaxis]))
     return a2k
 
 
@@ -533,6 +532,7 @@ def mkaeaz(v_t, wap, t_t, ttt, ttg, p_l, lat, gam, nlat, nlev):
     """
     dtdp = np.zeros([nlev, nlat])
     dtdy = np.zeros([nlev, nlat])
+    ttt = np.real(ttt)
     for l_l in np.arange(nlev):
         if l_l == 0:
             t_1 = np.real(ttt[l_l, :, 0]) - ttg[l_l]
@@ -645,11 +645,11 @@ def mkkekz(u_t, v_t, wap, utt, vtt, p_l, lat, nlat, ntp, nlev):
     c_4 = np.zeros([nlev, nlat, ntp - 1])
     c_5 = np.zeros([nlev, nlat, ntp - 1])
     c_6 = np.zeros([nlev, nlat, ntp - 1])
-    u_u = u_t * np.conj(u_t) + u_t * np.conj(u_t)
-    u_v = u_t * np.conj(v_t) + v_t * np.conj(u_t)
-    v_v = v_t * np.conj(v_t) + v_t * np.conj(v_t)
-    u_w = u_t * np.conj(wap) + wap * np.conj(u_t)
-    v_w = v_t * np.conj(wap) + wap * np.conj(v_t)
+    u_u = np.real(u_t * np.conj(u_t) + u_t * np.conj(u_t))
+    u_v = np.real(u_t * np.conj(v_t) + v_t * np.conj(u_t))
+    v_v = np.real(v_t * np.conj(v_t) + v_t * np.conj(v_t))
+    u_w = np.real(u_t * np.conj(wap) + wap * np.conj(u_t))
+    v_w = np.real(v_t * np.conj(wap) + wap * np.conj(v_t))
     for i_l in np.arange(nlat):
         c_1[:, i_l, :] = dudy[:, i_l][:, np.newaxis] * u_v[:, i_l, :]
         c_2[:, i_l, :] = dvdy[:, i_l][:, np.newaxis] * v_v[:, i_l, :]
@@ -700,34 +700,34 @@ def mkatas(u_t, v_t, wap, t_t, ttt, g_w, p_l, lat, nlat, ntp, nlev):
     c_5 = np.zeros([nlev, nlat, ntp - 1])
     for i_l in range(nlat):
         if i_l == 0:
-            c_2[:, i_l, :] = (
+            c_2[:, i_l, :] = np.real(
                 t_v[:, i_l, :] / (AA * (lat[i_l + 1] - lat[i_l])) *
                 np.conj(ttt[:, i_l + 1, np.newaxis] - ttt[:, i_l, np.newaxis]))
-            c_3[:, i_l, :] = (
+            c_3[:, i_l, :] = np.real(
                 np.conj(t_v[:, i_l, :]) / (AA * (lat[i_l + 1] - lat[i_l])) *
                 (ttt[:, i_l + 1, np.newaxis] - ttt[:, i_l, np.newaxis]))
         elif i_l == nlat - 1:
-            c_2[:, i_l, :] = (
+            c_2[:, i_l, :] = np.real(
                 t_v[:, i_l, :] / (AA * (lat[i_l] - lat[i_l - 1])) *
                 np.conj(ttt[:, i_l, np.newaxis] - ttt[:, i_l - 1, np.newaxis]))
-            c_3[:, i_l, :] = (
+            c_3[:, i_l, :] = np.real(
                 np.conj(t_v[:, i_l, :]) / (AA * (lat[i_l] - lat[i_l - 1])) *
                 (ttt[:, i_l, np.newaxis] - ttt[:, i_l - 1, np.newaxis]))
         else:
-            c_2[:, i_l, :] = (
+            c_2[:, i_l, :] = np.real(
                 t_v[:, i_l, :] / (AA * (lat[i_l + 1] - lat[i_l - 1])) *
                 np.conj(ttt[:, i_l + 1, np.newaxis] -
                         ttt[:, i_l - 1, np.newaxis]))
-            c_3[:, i_l, :] = (
+            c_3[:, i_l, :] = np.real(
                 np.conj(t_v[:, i_l, :]) / (AA * (lat[i_l + 1] - lat[i_l - 1]))
                 * (ttt[:, i_l + 1, np.newaxis] - ttt[:, i_l - 1, np.newaxis]))
     for l_l in range(nlev):
         if l_l == 0:
-            c_5[l_l, :, :] = (
+            c_5[l_l, :, :] = np.real(
                 (ttt[l_l + 1, :, np.newaxis] - ttt[l_l, :, np.newaxis]) /
                 (p_l[l_l + 1] - p_l[l_l]))
         elif l_l == nlev - 1:
-            c_5[l_l, :, :] = (
+            c_5[l_l, :, :] = np.real(
                 (ttt[l_l, :, np.newaxis] - ttt[l_l - 1, :, np.newaxis]) /
                 (p_l[l_l] - p_l[l_l - 1]))
         else:
@@ -884,13 +884,13 @@ def preproc_lec(model, wdir, ldir, filedict):
     import fourier_coefficients
     cdo = Cdo()
     fourc = fourier_coefficients
-    ta_file = filedict['ta_']
-    tas_file = filedict['tas']
-    ua_file = filedict['ua_']
-    uas_file = filedict['uas']
-    va_file = filedict['va_']
-    vas_file = filedict['vas']
-    wap_file = filedict['wap']
+    ta_file = filedict['/ta_']
+    tas_file = filedict['/tas_']
+    ua_file = filedict['/ua_']
+    uas_file = filedict['/uas_']
+    va_file = filedict['/va_']
+    vas_file = filedict['/vas_']
+    wap_file = filedict['/wap_']
     maskorog = wdir + '/orog.nc'
     ua_file_mask = wdir + '/ua_fill.nc'
     va_file_mask = wdir + '/va_fill.nc'
@@ -1091,7 +1091,7 @@ def write_to_tab(logfile, name, vared, varzon):
     - varzon: an array containing the zonal mean component;
     """
     vartot = varzon + vared[0]
-    with open(logfile, 'w') as log:
+    with open(logfile, 'a+') as log:
         log.write(' {} TOTAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(
             name, vartot[0], vartot[1], vartot[2]))
         log.write('--------------------------------------\n')
