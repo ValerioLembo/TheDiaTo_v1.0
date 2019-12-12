@@ -62,7 +62,7 @@ def init_mkthe_direntr(model, wdir, filedict, te_file, flags):
 
     Returns:
     -------
-    A list of files cotiaining the components of the MEP with the direct
+    A list of files containing the components of the MEP with the direct
     method.
     """
     cdo = Cdo()

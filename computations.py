@@ -179,7 +179,7 @@ def budgets(model, wdir, aux_file, filedict):
     return eb_gmean, eb_file, toab_ymm_file
 
 
-def direntr(logger, model, wdir, filedict, aux_file, lect, lec, flags):
+def direntr(logger, model, wdir, filedict, aux_file, te_file, lect, flags):
     """Compute the material entropy production with the direct method.
 
     The function computes the material entropy production with the direct
@@ -196,16 +196,16 @@ def direntr(logger, model, wdir, filedict, aux_file, lect, lec, flags):
     - wdir: the working directory where the outputs are stored;
     - filedict: a dictionary containing all the input files;
     - aux_file: the name of a dummy aux. file to be used for computations;
+    - te_file: a file containing the field for TOA emission temperatures;
     - lect: the annual mean value of the LEC strength;
-    - lec: a flag having y (yes) value if the LEC is computed, n (no) if not.
-    In the latter case, a reference value of 0.010 W*m-2*K-1 is given for the
-    material entropy production related to the kinetic energy dissipation;
-    - flags: a list of flags containing information on whether the water mass
-    and energy budgets are computed, if the material entropy production has to
-    be computed, if using the indirect, the direct method, or both methods;
+    - flags: a list of options containing the user choices;
+    In case the option for LEC is set to 'False', a reference value of 
+    0.010 W*m-2*K-1 is given for the material entropy production related to the
+    kinetic energy dissipation;
     """
     import mkthe
-    _, _, _, aux_files = mkthe.init_mkthe_direntr(model, wdir, filedict, flags)
+    lec = flags[1]
+    aux_files = mkthe.init_mkthe_direntr(model, wdir, filedict, te_file, flags)
     htop_file = aux_files[1]
     prr_file = aux_files[2]
     tabl_file = aux_files[3]

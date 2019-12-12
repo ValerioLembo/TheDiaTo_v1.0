@@ -277,8 +277,8 @@ for model in models:
                         dict_basic[i] = name
             print(dict_basic)
             matentr, irrevers, entr_list = comp.direntr(
-                logger, model, wdir, dict_basic, aux_file, lect,
-                flagin[2], flags=flag)
+                logger, model, wdir, dict_basic, aux_file, te_file, lect,
+                flags=flag)
             matentr_all[i_m, 0] = matentr
             if flagin[4] in {'3'}:
                 diffentr = (float(np.nanmean(vert_mn)) + float(
