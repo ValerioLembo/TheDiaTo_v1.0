@@ -268,7 +268,6 @@ for model in models:
                              'Vertical entropy production', model)
             plotsmod.entropy(pdir, horzentr_file, 'shor',
                              'Horizontal entropy production', model)
-            os.remove(te_file)
             logger.info('Done\n')
         if flagin[4] in {'2', '3'}:
             for i in list_direntr:
@@ -309,4 +308,5 @@ logger.info('Scatter plots for inter-annual variability of'
             ' some quantities')
 eb_list = [toab_all, atmb_all, surb_all]
 plotsmod.plot_mm_ebscatter(direc[1], eb_list)
+os.remove(te_file)
 logger.info("The diagnostic has finished. Now closing...\n")
