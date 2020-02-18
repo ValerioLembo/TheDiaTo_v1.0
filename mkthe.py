@@ -168,43 +168,43 @@ def input_data(wdir, file_list):
     Valerio Lembo, University of Hamburg, 2019
     """
     cdo = Cdo()
-    ts_miss_file = wdir + '/ts.nc'
-    removeif(ts_miss_file)
-    cdo.setctomiss('0', input=file_list[0], output=ts_miss_file)
-    hus_miss_file = wdir + '/hus.nc'
-    removeif(hus_miss_file)
-    cdo.setctomiss('0', input=file_list[1], output=hus_miss_file)
-    ps_miss_file = wdir + '/ps.nc'
-    removeif(ps_miss_file)
-    cdo.setctomiss('0', input=file_list[2], output=ps_miss_file)
-    vv_missfile = wdir + '/V.nc'
-    removeif(vv_missfile)
-    vv_file = wdir + '/V_miss.nc'
-    removeif(vv_file)
+    ts_file = file_list[0]
+    #removeif(ts_miss_file)
+    #cdo.setctomiss('0', input=file_list[0], output=ts_miss_file)
+    hus_file = file_list[1]
+    #removeif(hus_miss_file)
+    #cdo.setctomiss('0', input=file_list[1], output=hus_miss_file)
+    ps_file = file_list[2]
+    #removeif(ps_miss_file)
+    #cdo.setctomiss('0', input=file_list[2], output=ps_miss_file)
+    #vv_missfile = wdir + '/V.nc'
+    #removeif(vv_missfile)
+    vv_file = wdir + '/V.nc'
+    #removeif(vv_file)
     cdo.sqrt(
         input='-add -sqr {} -sqr {}'.format(file_list[3], file_list[4]),
         options='-b F32',
         output=vv_file)
-    cdo.setctomiss('0', input=vv_file, output=vv_missfile)
-    os.remove(vv_file)
-    hfss_miss_file = wdir + '/hfss.nc'
-    removeif(hfss_miss_file)
-    cdo.setctomiss('0', input=file_list[5], output=hfss_miss_file)
-    te_miss_file = wdir + '/te.nc'
-    removeif(te_miss_file)
-    cdo.setctomiss('0', input=file_list[6], output=te_miss_file)
-    with Dataset(ts_miss_file) as dataset:
+    #cdo.setctomiss('0', input=vv_file, output=vv_missfile)
+    #os.remove(vv_file)
+    hfss_file = file_list[5]
+    #removeif(hfss_miss_file)
+    #cdo.setctomiss('0', input=file_list[5], output=hfss_miss_file)
+    te_file = file_list[6]
+    #removeif(te_miss_file)
+    #cdo.setctomiss('0', input=file_list[6], output=te_miss_file)
+    with Dataset(ts_file) as dataset:
         t_s = dataset.variables['ts'][:, :, :]
-    with Dataset(hus_miss_file) as dataset:
+    with Dataset(hus_file) as dataset:
         hus = dataset.variables['hus'][:, :, :, :]
         lev = dataset.variables['plev'][:]
-    with Dataset(ps_miss_file) as dataset:
+    with Dataset(ps_file) as dataset:
         p_s = dataset.variables['ps'][:, :, :]
-    with Dataset(vv_missfile) as dataset:
+    with Dataset(vv_file) as dataset:
         vv_hor = dataset.variables['uas'][:, :, :]
-    with Dataset(hfss_miss_file) as dataset:
+    with Dataset(hfss_file) as dataset:
         hfss = dataset.variables['hfss'][:, :, :]
-    with Dataset(te_miss_file) as dataset:
+    with Dataset(te_file) as dataset:
         t_e = dataset.variables['rlut'][:, :, :]
     huss = hus[:, 0, :, :]
     huss = np.where(lev[0] >= p_s, huss, 0.)
@@ -213,12 +213,12 @@ def input_data(wdir, file_list):
         aux = hus[:, l_l, :, :]
         aux = np.where((p_s >= lev[l_l]), aux, 0.)
         huss = huss + aux
-    remove_files = [
-        ts_miss_file, hus_miss_file, ps_miss_file, vv_missfile, hfss_miss_file,
-        te_miss_file
-    ]
-    for filen in remove_files:
-        os.remove(filen)
+    #remove_files = [
+        #ts_file, hus_file, ps_file, vv_file, hfss_file,
+        #te_file
+    #]
+    #for filen in remove_files:
+    #    os.remove(filen)
     return hfss, huss, p_s, t_e, t_s, vv_hor
 
 
