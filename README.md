@@ -84,6 +84,7 @@ the developers.
 
     a. The following variables are needed at the monthly resolution or higher
        (required variable name in brackets):
+       
      - TOA shortwave radiation downwards (rsdt);
      - TOA shortwave radiation upwards (rsut);
      - TOA longwave radiation upwards (rlut);
@@ -93,15 +94,32 @@ the developers.
      - Surface longwave radiation upwards (rlus);
      - Surface upward turbulent latent heat fluxes (hfls);
      - Surface upward turbulent sensible heat fluxes (hfss);
+     
+       FOR WATER MASS AND LATENT ENERGY BUDGET:
+     
+     - Precipitation flux (pr);
+     - Snowfall flux (prsn);
+     - Evaporation flux (evap); (if available, the evaporation flux is retrieved directly
+                                 from the input fields, see paragraph 2);
+     
+       FOR MEP PRODUCTION WITH INDIRECT METHOD:
+     
+     - Surface temperature (ts);
+    
+       FOR MEP PRODUCTION WITH DIRECT METHOD:
+    
      - Precipitation flux (pr);
      - Snowfall flux (prsn);
      - Surface air pressure (ps);
-     - Surface temperature (ts);
      - Specific humidity on pressure levels (hus);
+     - Surface temperature (ts);
+     - Near-surface (or 10m) zonal velocity (uas);
+     - Near-surface (or 10m) meridional velocity (vas);
      
      N.B. Precipitation fluxes are expected to have kg m-2 s-1 as u.o.m.
      
-    b. The following variables are needed at the daily resolution or higher:
+    b. If the option for LEC computation is set, the following variables are needed at the daily resolution or higher   
+       (required variable name in brackets):
      - Near-surface temperature (tas);
      - Near-surface (or 10m) zonal velocity (uas);
      - Near-surface (or 10m) meridional velocity (vas);
@@ -159,6 +177,10 @@ the developers.
    - met: if set to 1, the program will compute the MEP with the indirect
           method, if set to 2 with the direct method, if set to 3, both
           methods will be computed and compared with each other;
+   - evap: if set to 1, evaporation flux is computed from the latent heat fluxes,
+           if set to 2 the field containing the evaporation flux must be provided
+           (this last option shall be preferred, because it gives a more accurate 
+            estimate of the water mass budget);
               
 4: Run the tool by typing: 'python thermodyn_diagnostics.py'. Global metrics
    and additional information is printed out in the log file indicated by the
@@ -243,7 +265,9 @@ The output directory contains the following NetCDF files:
 
 ## References
 
-Lembo, V., Lunkeit, F., and Lucarini, V.: TheDiaTo (v1.0) – A new diagnostic tool for water, energy and entropy budgets in climate models, Geosci. Model Dev. Discuss., https://doi.org/10.5194/gmd-2019-37, in review, 2019
+Lembo, V., Lunkeit, F., and Lucarini, V.: TheDiaTo (v1.0) – A new diagnostic tool for water, energy and entropy budgets in climate models, Geosci. Model Dev., 12, 3805–3834, https://doi.org/10.5194/gmd-12-3805-2019, 2019
 
 ## Versions
 2019-04-29: a stand-alone version of TheDiaTo v1.0 is branched from ESMValTool v2.0b repository;
+
+2019-12-09: the water mass budget can be computed from input fields containing evaporation fluxes, if available;
