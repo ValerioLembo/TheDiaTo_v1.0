@@ -508,11 +508,11 @@ def mka2k(wap, t_t, w_g, t_g, p_l):
     - t_g: a temperature vertical profile;
     - p_l: the pressure levels;
     """
-    a2k = -np.real(R / p_l[:, np.newaxis, np.newaxis] *
-                   (t_t * np.conj(wap) + np.conj(t_t) * wap))
-    a2k[:, :, 0] = -np.real(R / p_l[:, np.newaxis] *
-                           (t_t[:, :, 0] - t_g[:, np.newaxis]) *
-                           (wap[:, :, 0] - w_g[:, np.newaxis]))
+    a2k = - np.real(R / p_l[:, np.newaxis, np.newaxis] *
+                    (t_t * np.conj(wap) + np.conj(t_t) * wap))
+    a2k[:, :, 0] = - np.real(R / p_l[:, np.newaxis] *
+                             (t_t[:, :, 0] - t_g[:, np.newaxis]) *
+                             (wap[:, :, 0] - w_g[:, np.newaxis]))
     return a2k
 
 
@@ -654,7 +654,7 @@ def mkkekz(u_t, v_t, wap, utt, vtt, p_l, lat, nlat, ntp, nlev):
         c_1[:, i_l, :] = dudy[:, i_l][:, np.newaxis] * u_v[:, i_l, :]
         c_2[:, i_l, :] = dvdy[:, i_l][:, np.newaxis] * v_v[:, i_l, :]
         c_5[:, i_l, :] = (np.tan(lat[i_l]) / AA * np.real(
-            utt[:, i_l, 0])[:, np.newaxis] * (u_v[:, i_l, :]))
+            utt[:, i_l, 0])[:r, np.newaxis] * (u_v[:, i_l, :]))
         c_6[:, i_l, :] = -(np.tan(lat[i_l]) / AA * np.real(
             vtt[:, i_l, 0])[:, np.newaxis] * (u_u[:, i_l, :]))
     for l_l in np.arange(nlev):
