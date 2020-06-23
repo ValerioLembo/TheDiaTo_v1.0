@@ -114,7 +114,7 @@ def baroceff(model, wdir, aux_file, toab_file, te_file):
     return baroc
 
 
-def budgets(model, wdir, aux_file, filelist):
+def budgets(model, wdir, aux_file, filedict):
     """Compute radiative budgets from radiative and heat fluxes.
 
     The function computes TOA and surface energy budgets from radiative and
@@ -130,18 +130,18 @@ def budgets(model, wdir, aux_file, filelist):
     - model: the model name;
     - wdir: the working directory where the outputs are stored;
     - aux_file: the name of a dummy aux. file to be used for computations;
-    - filelist: a list of file names containing the input fields;
+    - filedict: a list of file names containing the input fields;
     """
     cdo = Cdo()
-    hfls_file = filelist[0]
-    hfss_file = filelist[1]
-    rlds_file = filelist[6]
-    rlus_file = filelist[7]
-    rlut_file = filelist[8]
-    rsds_file = filelist[9]
-    rsdt_file = filelist[10]
-    rsus_file = filelist[11]
-    rsut_file = filelist[12]
+    hfls_file = filedict['/hfls_']
+    hfss_file = filedict['/hfss_']
+    rlds_file = filedict['/rlds_']
+    rlus_file = filedict['/rlus_']
+    rlut_file = filedict['/rlut_']
+    rsds_file = filedict['/rsds_']
+    rsdt_file = filedict['/rsdt_']
+    rsus_file = filedict['/rsus_']
+    rsut_file = filedict['/rsut_']
     toab_file = wdir + '/{}_toab.nc'.format(model)
     toab_gmean_file = wdir + '/{}_toab_gmean.nc'.format(model)
     surb_file = wdir + '/{}_surb.nc'.format(model)
@@ -153,7 +153,7 @@ def budgets(model, wdir, aux_file, filelist):
     cdo.sub(
         input="-sub {} {} {}".format(rsdt_file, rsut_file, rlut_file),
         output=aux_file)
-    toab_gmean = write_eb('rsdt', 'toab', aux_file, toab_file, toab_gmean_file)
+    toab_gmean = write_eb('toab', aux_file, toab_file, toab_gmean_file)
     toab_ymm_file = wdir + '/{}_toab_ymm.nc'.format(model)
     cdo.yearmonmean(input=toab_file, output=toab_ymm_file)
     # Surface energy budget
@@ -163,11 +163,11 @@ def budgets(model, wdir, aux_file, filelist):
         input="-sub -sub -sub {} {} {} {} {}".format(
             aux_surb_file, rsus_file, rlus_file, hfls_file, hfss_file),
         output=aux_file)
-    surb_gmean = write_eb('rsds', 'surb', aux_file, surb_file, surb_gmean_file)
+    surb_gmean = write_eb('surb', aux_file, surb_file, surb_gmean_file)
     # Atmospheric energy budget
     removeif(aux_file)
     cdo.sub(input="{} {}".format(toab_file, surb_file), output=aux_file)
-    atmb_gmean = write_eb('toab', 'atmb', aux_file, atmb_file, atmb_gmean_file)
+    atmb_gmean = write_eb('atmb', aux_file, atmb_file, atmb_gmean_file)
     eb_gmean = [toab_gmean, atmb_gmean, surb_gmean]
     eb_file = [toab_file, atmb_file, surb_file]
     # Delete files
@@ -179,7 +179,7 @@ def budgets(model, wdir, aux_file, filelist):
     return eb_gmean, eb_file, toab_ymm_file
 
 
-def direntr(logger, model, wdir, filelist, aux_file, lect, lec, flags):
+def direntr(logger, model, wdir, filedict, aux_file, te_file, lect, flags):
     """Compute the material entropy production with the direct method.
 
     The function computes the material entropy production with the direct
@@ -194,18 +194,18 @@ def direntr(logger, model, wdir, filelist, aux_file, lect, lec, flags):
     - logger: the log file where the global mean values are printed out;
     - model: the model name;
     - wdir: the working directory where the outputs are stored;
-    - filelist: the list containing all the input files;
+    - filedict: a dictionary containing all the input files;
     - aux_file: the name of a dummy aux. file to be used for computations;
+    - te_file: a file containing the field for TOA emission temperatures;
     - lect: the annual mean value of the LEC strength;
-    - lec: a flag having y (yes) value if the LEC is computed, n (no) if not.
-    In the latter case, a reference value of 0.010 W*m-2*K-1 is given for the
-    material entropy production related to the kinetic energy dissipation;
-    - flags: a list of flags containing information on whether the water mass
-    and energy budgets are computed, if the material entropy production has to
-    be computed, if using the indirect, the direct method, or both methods;
+    - flags: a list of options containing the user choices;
+    In case the option for LEC is set to 'False', a reference value of 
+    0.010 W*m-2*K-1 is given for the material entropy production related to the
+    kinetic energy dissipation;
     """
     import mkthe
-    _, _, _, aux_files = mkthe.init_mkthe(model, wdir, filelist, flags)
+    lec = flags[1]
+    aux_files = mkthe.init_mkthe_direntr(model, wdir, filedict, te_file, flags)
     htop_file = aux_files[1]
     prr_file = aux_files[2]
     tabl_file = aux_files[3]
@@ -213,10 +213,10 @@ def direntr(logger, model, wdir, filelist, aux_file, lect, lec, flags):
     tcloud_file = aux_files[5]
     tcolumn_file = aux_files[6]
     tlcl_file = aux_files[7]
-    hfls_file = filelist[0]
-    hfss_file = filelist[1]
-    prsn_file = filelist[4]
-    ts_file = filelist[15]
+    hfls_file = filedict['/hfls_']
+    hfss_file = filedict['/hfss_']
+    prsn_file = filedict['/prsn_']
+    ts_file = filedict['/ts_']
     logger.info('Computation of the material entropy '
                 'production with the direct method\n')
     logger.info('1. Sensible heat fluxes\n')
@@ -267,8 +267,8 @@ def direntr(logger, model, wdir, filelist, aux_file, lect, lec, flags):
     logger.info('Material entropy production with '
                 'the direct method: %s\n', matentr)
     irrevers = ((matentr - float(skin)) / float(skin))
-    for filen in aux_files:
-        os.remove(filen)
+    # for filen in aux_files:
+    #    os.remove(filen)
     entr_list = [
         sensentr_file, evapentr_file, rainentr_file, snowentr_file,
         meltentr_file, potentr_file
@@ -301,7 +301,7 @@ def entr(filelist, nin, nout, entr_file, entr_mean_file):
         input='-yearmonmean -monmean -div {} {}'.format(en_file, tem_file),
         options='-b F32',
         output=aux_file)
-    entr_gmean = write_eb(nin, nout, aux_file, entr_file, entr_mean_file)
+    entr_gmean = write_eb(nout, aux_file, entr_file, entr_mean_file)
     return entr_gmean
 
 
@@ -359,7 +359,7 @@ def indentr(model, wdir, infile, aux_file, toab_gmean):
         input='-mulc,-1 -div -subc,{}  {}  {}'.format(
             np.nanmean(toab_gmean), infile[5], infile[4]),
         output=aux_file)
-    horzentr_mean = write_eb('toab', 'shor', aux_file, horzentropy_file,
+    horzentr_mean = write_eb('shor', aux_file, horzentropy_file,
                              horzentropy_mean_file)
     cdo.yearmonmean(
         input=' -add {} -sub {} -add {} {}'.format(infile[0], infile[2],
@@ -369,7 +369,7 @@ def indentr(model, wdir, infile, aux_file, toab_gmean):
         input='{} -sub -yearmonmean -reci {} -yearmonmean -reci {}'.format(
             vertenergy_file, infile[4], infile[6]),
         output=aux_file)
-    vertentr_mean = write_eb('rlds', 'sver', aux_file, vertentropy_file,
+    vertentr_mean = write_eb('sver', aux_file, vertentropy_file,
                              vertentropy_mean_file)
     remove_files = [
         horzentropy_mean_file, vertenergy_file, vertentropy_mean_file
@@ -431,7 +431,9 @@ def landoc_budg(model, wdir, infile, mask, name):
     aux_file = wdir + '/aux.nc'
     removeif(aux_file)
     cdo.mul(input='{} -eqc,0 {}'.format(infile, mask), output=ocean_file)
-    cdo.timmean(input='-fldmean {}'.format(ocean_file), output=oc_gmean_file)
+    cdo.timmean(
+        input='-fldmean -setctomiss,nan -setmissval,nan {}'.format(ocean_file),
+        output=oc_gmean_file)
     with Dataset(oc_gmean_file) as f_l:
         oc_gmean = f_l.variables[name][0, 0, 0]
     cdo.sub(input='{} {}'.format(infile, ocean_file), output=land_file)
@@ -439,7 +441,9 @@ def landoc_budg(model, wdir, infile, mask, name):
     move(aux_file, ocean_file)
     cdo.setctomiss('0', input=land_file, output=aux_file)
     move(aux_file, land_file)
-    cdo.timmean(input='-fldmean {}'.format(land_file), output=la_gmean_file)
+    cdo.timmean(
+        input='-fldmean -setctomiss,nan -setmissval,nan {}'.format(land_file),
+        output=la_gmean_file)
     with Dataset(la_gmean_file) as f_l:
         la_gmean = f_l.variables[name][0, 0, 0]
     remove_files = [ocean_file, oc_gmean_file, land_file, la_gmean_file]
@@ -737,7 +741,7 @@ def snowentr(model, wdir, infile, aux_file):
     return snowentr_gmean, latsnow_file, snowentr_file
 
 
-def wmbudg(model, wdir, aux_file, filelist, auxlist):
+def wmbudg(model, wdir, aux_file, filedict, auxlist, flags):
     """Compute the water mass and latent energy budgets.
 
     This function computes the annual mean water mass and latent energy budgets
@@ -750,8 +754,14 @@ def wmbudg(model, wdir, aux_file, filelist, auxlist):
     - model: the model name;
     - wdir: the working directory where the outputs are stored;
     - aux_file: the name of a dummy aux. file to be used for computations;
-    - filelist: a list of file names containing the input fields;
+    - filedict: a dictionary of file names containing the input fields;
     - auxlist: a list of auxiliary files;
+    - flags: (wat: a flag for the water mass budget module (y or n),
+              entr: a flag for the material entropy production (y or n);
+              met: a flag for the material entropy production method
+              (1: indirect, 2: direct, 3: both);
+              evap: a flag for the method to retrieve the evap. fluxes
+              (1: from heat fluxes, 2: from the original field)
     """
     cdo = Cdo()
     wmbudg_file = wdir + '/{}_wmb.nc'.format(model)
@@ -759,14 +769,23 @@ def wmbudg(model, wdir, aux_file, filelist, auxlist):
     latene_file = wdir + '/{}_latent.nc'.format(model)
     latene_gmean_file = wdir + '/{}_latent_gmean.nc'.format(model)
     removeif(aux_file)
-    cdo.sub(input="{} {}".format(auxlist[0], filelist[3]), output=aux_file)
-    wmass_gmean = write_eb('hfls', 'wmb', aux_file, wmbudg_file, wm_gmean_file)
+    cdo.sub(input="{} {}".format(auxlist[0], filedict['/pr_']),
+            output=aux_file)
+    wmass_gmean = write_eb('wmb', aux_file, wmbudg_file, wm_gmean_file)
     removeif(aux_file)
-    cdo.sub(
-        input="{} -add -mulc,{} {} -mulc,{} {}".format(
-            filelist[0], str(LC_SUB), filelist[4], str(L_C), auxlist[2]),
-        output=aux_file)
-    latent_gmean = write_eb('hfls', 'latent', aux_file, latene_file,
+    if flags[4] == '1':
+        cdo.sub(
+            input="{} -add -mulc,{} {} -mulc,{} {}".format(
+            filedict['/hfls_'], str(LC_SUB), filedict['/prsn_'], str(L_C),
+            auxlist[1]),
+            output=aux_file)
+    elif flags[4] == '2':
+        cdo.sub(
+            input="-mulc,{} {} -add -mulc,{} {} -mulc,{} {}".format(
+            str(L_C), filedict['/evap_'], str(LC_SUB), filedict['/prsn_'],
+            str(L_C), auxlist[1]),
+            output=aux_file)
+    latent_gmean = write_eb('latent', aux_file, latene_file,
                             latene_gmean_file)
     varlist = [wmass_gmean, latent_gmean]
     filelist = [wmbudg_file, latene_file]
@@ -776,7 +795,7 @@ def wmbudg(model, wdir, aux_file, filelist, auxlist):
     return varlist, filelist
 
 
-def write_eb(namein, nameout, aux_file, d3_file, gmean_file):
+def write_eb(nameout, aux_file, d3_file, gmean_file):
     """Change variable name in the NetCDF file and compute averages.
 
     Arguments:
@@ -788,9 +807,13 @@ def write_eb(namein, nameout, aux_file, d3_file, gmean_file):
       averaged fields;
     """
     cdo = Cdo()
+    namein = cdo.showname(input=aux_file)
+    namein = str(namein[0])
     ch_name = '{},{}'.format(namein, nameout)
     cdo.chname(ch_name, input=aux_file, options='-b F32', output=d3_file)
-    cdo.fldmean(input='-yearmonmean {}'.format(d3_file), output=gmean_file)
+    cdo.fldmean(
+        input='-yearmonmean -setctomiss,nan -setmissval,nan {}'.format(
+                d3_file), output=gmean_file)
     with Dataset(gmean_file) as f_l:
         constant = f_l.variables[nameout][:]
     return constant

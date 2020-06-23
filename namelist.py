@@ -33,16 +33,21 @@ direc = [idir_up, pdir_up, wdir_up]
 
 # Write the model names you want to analyse in this list, as strings and
 # separated by commas.
-models = ['BNU-ESM', 'CanESM2', 'IPSL-CM5A-MR', 'MIROC5', 'MIROC-ESM-CHEM', 'MPI-ESM-LR', 'MPI-ESM-MR']
+#models = ['BNU-ESM', 'CanESM2', 'IPSL-CM5A-MR', 'MIROC5', 'MIROC-ESM-CHEM', 'MPI-ESM-LR', 'MPI-ESM-MR']
+models = ['CanESM2']
 
 # Set the flags for the modules to 'True' or 'False'. Set the 'met' flag to
 # '1' for computing the MEP with the indirect method, '2' for the direct method
-# , '3' for both.
+# , '3' for both. Set the 'evap' flag to '1' if you want the evaporation fluxes
+# to be computed from the latent heat fluxes at the surface, '2' if you provide
+# fields of evaporation fluxes.
 lsm = 'False' # Flag for the land-ocean computations
-wat = 'False' # Flag for the water and latent energy budget
+wat = 'True' # Flag for the water and latent energy budget
 lec = 'False' # Flag for the LEC
 entr = 'True' # Flag for the MEP
 met = '1' # Option for the MEP method
+evap = '2' # Option for the evaporation flux (1 if it has to be computed from
+           # the latent heat fluxes, 2 if the field is provided)
 
-flagin = [lsm, wat, lec, entr, met]
+flagin = [lsm, wat, lec, entr, met, evap]
 logfile = 'log_{}.txt'.format(date) # Put the desired name for the log here

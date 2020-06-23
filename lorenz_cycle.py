@@ -178,7 +178,6 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
     output(ae2az, d_s, filenc, 'ae2az', nc_f)
     nc_f = outpath + '/ke2kz_tmap_{}_{}.nc'.format(model, year)
     output(ke2kz, d_s, filenc, 'ke2kz', nc_f)
-    log.close()
     return lec_strength
 
 
@@ -445,7 +444,7 @@ def init(logfile, filep):
     ua_c = ua_r + 1j * ua_i
     va_c = va_r + 1j * va_i
     wap_c = wap_r + 1j * wap_i
-    with open(logfile, 'w') as log:
+    with open(logfile, 'a+') as log:
         log.write(' \n')
         log.write(' \n')
         log.write('INPUT DATA:\n')
@@ -649,7 +648,7 @@ def mkkekz(u_t, v_t, wap, utt, vtt, p_l, lat, nlat, ntp, nlev):
     u_u = np.real(u_t * np.conj(u_t) + u_t * np.conj(u_t))
     u_v = np.real(u_t * np.conj(v_t) + v_t * np.conj(u_t))
     v_v = np.real(v_t * np.conj(v_t) + v_t * np.conj(v_t))
-    u_w = np.real( u_t * np.conj(wap) + wap * np.conj(u_t))
+    u_w = np.real(u_t * np.conj(wap) + wap * np.conj(u_t))
     v_w = np.real(v_t * np.conj(wap) + wap * np.conj(v_t))
     for i_l in np.arange(nlat):
         c_1[:, i_l, :] = dudy[:, i_l][:, np.newaxis] * u_v[:, i_l, :]
@@ -724,11 +723,11 @@ def mkatas(u_t, v_t, wap, t_t, ttt, g_w, p_l, lat, nlat, ntp, nlev):
                 * (ttt[:, i_l + 1, np.newaxis] - ttt[:, i_l - 1, np.newaxis]))
     for l_l in range(nlev):
         if l_l == 0:
-            c_5[l_l, :, :] = (
+            c_5[l_l, :, :] = np.real(
                 (ttt[l_l + 1, :, np.newaxis] - ttt[l_l, :, np.newaxis]) /
                 (p_l[l_l + 1] - p_l[l_l]))
         elif l_l == nlev - 1:
-            c_5[l_l, :, :] = (
+            c_5[l_l, :, :] = np.real(
                 (ttt[l_l, :, np.newaxis] - ttt[l_l - 1, :, np.newaxis]) /
                 (p_l[l_l] - p_l[l_l - 1]))
         else:
@@ -866,7 +865,7 @@ def removeif(filename):
         pass
 
 
-def preproc_lec(model, wdir, ldir, filelist):
+def preproc_lec(model, wdir, ldir, filedict):
     """Preprocess fields for LEC computations and send it to lorenz program.
 
     This function computes the interpolation of ta, ua, va, wap daily fields to
@@ -880,18 +879,18 @@ def preproc_lec(model, wdir, ldir, filelist):
     - wdir: the working directory where the outputs are stored;
     - ldir: the directory where the LEC tables and the diagram of the LEC for
             each year are stored;
-    - filelist: a list of file names containing the input fields;
+    - filedict: a dictionary of file names containing the input fields;
     """
     import fourier_coefficients
     cdo = Cdo()
     fourc = fourier_coefficients
-    ta_file = filelist[13]
-    tas_file = filelist[14]
-    ua_file = filelist[16]
-    uas_file = filelist[17]
-    va_file = filelist[18]
-    vas_file = filelist[19]
-    wap_file = filelist[20]
+    ta_file = filedict['/ta_']
+    tas_file = filedict['/tas_']
+    ua_file = filedict['/ua_']
+    uas_file = filedict['/uas_']
+    va_file = filedict['/va_']
+    vas_file = filedict['/vas_']
+    wap_file = filedict['/wap_']
     maskorog = wdir + '/orog.nc'
     ua_file_mask = wdir + '/ua_fill.nc'
     va_file_mask = wdir + '/va_fill.nc'
@@ -1092,7 +1091,7 @@ def write_to_tab(logfile, name, vared, varzon):
     - varzon: an array containing the zonal mean component;
     """
     vartot = varzon + vared[0]
-    with open(logfile, 'w') as log:
+    with open(logfile, 'a+') as log:
         log.write(' {} TOTAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(
             name, vartot[0], vartot[1], vartot[2]))
         log.write('--------------------------------------\n')
