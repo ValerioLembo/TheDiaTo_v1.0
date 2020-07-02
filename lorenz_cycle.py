@@ -654,7 +654,7 @@ def mkkekz(u_t, v_t, wap, utt, vtt, p_l, lat, nlat, ntp, nlev):
         c_1[:, i_l, :] = dudy[:, i_l][:, np.newaxis] * u_v[:, i_l, :]
         c_2[:, i_l, :] = dvdy[:, i_l][:, np.newaxis] * v_v[:, i_l, :]
         c_5[:, i_l, :] = (np.tan(lat[i_l]) / AA * np.real(
-            utt[:, i_l, 0])[:r, np.newaxis] * (u_v[:, i_l, :]))
+            utt[:, i_l, 0])[:, np.newaxis] * (u_v[:, i_l, :]))
         c_6[:, i_l, :] = -(np.tan(lat[i_l]) / AA * np.real(
             vtt[:, i_l, 0])[:, np.newaxis] * (u_u[:, i_l, :]))
     for l_l in np.arange(nlev):
