@@ -54,7 +54,7 @@ list_wat=['/pr_', '/prsn_']
 list_wat_2=['/pr_', '/prsn_', '/evap_']
 list_lec=['/ta_', '/tas_', '/ua_', '/uas_', '/va_', '/vas_', '/wap_']
 list_indentr=['/ts_']
-list_direntr=['/hus_', '/pr_', '/prsn_','/ps_', 'uas_', 'vas_', '/ts_']
+list_direntr=['/hus_', '/pr_', '/prsn_','/ps_', '/uas_', '/vas_', '/ts_']
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 logging.basicConfig(filename=logfile, level=logging.INFO)
 logger = logging.getLogger(__file__)
