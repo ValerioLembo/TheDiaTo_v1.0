@@ -2,8 +2,10 @@
 A collection of diagnostic for the study of the thermodynamics of the climate system
 
 ## Author
-Valerio Lembo
+Valerio Lembo*
 (Meteorological Institute, Hamburg University - valerio.lembo@uni-hamburg.de)
+
+*Currently at CNR-ISAC, Bologna, Italy - v.lembo@isac.cnr.it
 
 ## Introduction
 
