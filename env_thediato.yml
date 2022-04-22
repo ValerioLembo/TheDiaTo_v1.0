@@ -1,0 +1,13 @@
+name: tediato
+channels:
+- scitools
+- conda-forge
+- defaults
+dependencies:
+- netcdf4
+- matplotlib
+- numpy
+- cdo
+- python-cdo
+- cartopy
+- xarray
