@@ -167,8 +167,6 @@ for model in models:
         plotsmod.balances(direc[2], pdir, [wm_file[0], wm_file[1]],
                           ['wmb', 'latent'], model)
         logger.info('Done\n')
-        for filen in aux_list:
-            os.remove(filen)
     if flagin[0] == 'True':
         lsmdir = os.path.join(direc[0], 'ls_mask')
         sftlf_fx = lsmdir + '/lsmask_{}.nc'.format(model)
