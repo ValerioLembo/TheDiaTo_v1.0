@@ -51,7 +51,7 @@ list_basic=[
     '/hfls_', '/hfss_', '/rlds_', '/rlus_', '/rlut_',
     '/rsds_', '/rsdt_', '/rsus_', '/rsut_']
 list_wat=['/pr_', '/prsn_']
-list_wat_2=['/pr_', '/prsn_', '/evap_']
+list_wat_2=['/pr_', '/prsn_', '/evspsbl_']
 list_lec=['/ta_', '/tas_', '/ua_', '/uas_', '/va_', '/vas_', '/wap_']
 list_indentr=['/ts_']
 list_direntr=['/hus_', '/pr_', '/prsn_','/ps_', '/uas_', '/vas_', '/ts_']
