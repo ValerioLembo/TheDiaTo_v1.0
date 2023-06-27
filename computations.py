@@ -782,7 +782,7 @@ def wmbudg(model, wdir, aux_file, filedict, auxlist, flags):
     elif flags[4] == '2':
         cdo.sub(
             input="-mulc,{} {} -add -mulc,{} {} -mulc,{} {}".format(
-            str(L_C), filedict['/evap_'], str(LC_SUB), filedict['/prsn_'],
+            str(L_C), filedict['/evspsbl_'], str(LC_SUB), filedict['/prsn_'],
             str(L_C), auxlist[1]),
             output=aux_file)
     latent_gmean = write_eb('latent', aux_file, latene_file,
