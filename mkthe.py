@@ -352,7 +352,7 @@ def wfluxes(model, wdir, filedict, flags):
         evspsbl_file = (wdir + '/{}_evspsbl.nc'.format(model))
         cdo.divc(str(L_C), input="{}".format(hfls_file), output=evspsbl_file)
     elif evap == '2':
-        evspsbl_file = filedict['/evap_']
+        evspsbl_file = filedict['/evspsbl_']
     pr_file = filedict['/pr_']
     prsn_file = filedict['/prsn_']
     aux_file = wdir + '/aux.nc'
